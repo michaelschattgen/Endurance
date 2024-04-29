@@ -1,0 +1,6 @@
+@Endurance.API_HostAddress = http://localhost:5223
+
+GET {{Endurance.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
