@@ -452,4 +452,4 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-VodSync.Api/appsettings.json
+Endurance.API/appsettings.Development.json
