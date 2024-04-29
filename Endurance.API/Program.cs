@@ -1,9 +1,23 @@
+using Endurance.API;
+using Endurance.API.Clients;
+using Endurance.API.Services;
+using Microsoft.Extensions.Caching.Memory;
+using Refit;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddRefitClient<IElectrolyteClient>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://electrolyte.sportcity.nl/v1"))
+    .AddHttpMessageHandler((serviceProvider) =>
+        new CustomHeadersHandler(serviceProvider));
+
+builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+builder.Services.AddScoped<TokenService>();
 
 var app = builder.Build();
 
@@ -16,29 +30,24 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/get-classes", async (TokenService tokenService, IElectrolyteClient electrolyteClient) =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
+        try
+        {
+            var response = await electrolyteClient.GetScheduledClasses(
+                "",
+                false,
+                "2024-04-29T00:00:00.000+02:00",
+                "all"
+            );
+            return Results.Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
     })
-    .WithName("GetWeatherForecast")
+    .WithName("GetClasses")
     .WithOpenApi();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
