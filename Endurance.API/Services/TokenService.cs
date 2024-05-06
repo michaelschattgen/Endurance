@@ -1,5 +1,6 @@
 ﻿using Endurance.API.Clients;
 using Endurance.API.Models;
+using Endurance.API.Models.Electrolyte;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Endurance.API.Services;

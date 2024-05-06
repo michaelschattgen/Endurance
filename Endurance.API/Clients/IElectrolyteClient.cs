@@ -1,4 +1,5 @@
 ﻿using Endurance.API.Models;
+using Endurance.API.Models.Electrolyte;
 using Refit;
 
 namespace Endurance.API.Clients;

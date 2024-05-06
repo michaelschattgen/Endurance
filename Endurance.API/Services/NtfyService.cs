@@ -1,5 +1,6 @@
 ﻿using Endurance.API.Interfaces;
 using Endurance.API.Models;
+using Endurance.API.Models.Settings;
 using ntfy;
 using ntfy.Requests;
 

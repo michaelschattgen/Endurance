@@ -1,10 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Endurance.API.Models;
+namespace Endurance.API.Models.Electrolyte;
 
 public class ScheduledClass
 {
-            [JsonPropertyName("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         [JsonPropertyName("venueName")]

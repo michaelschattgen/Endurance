@@ -1,4 +1,4 @@
-﻿namespace Endurance.API.Models;
+﻿namespace Endurance.API.Models.Electrolyte;
 
 public class TokenResponseModel
 {
