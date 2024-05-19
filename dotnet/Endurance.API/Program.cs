@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
+string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -25,6 +26,14 @@ builder.Configuration.GetSection("Settings").Bind(settings);
 builder.Services.AddSingleton(settings.ConnectionStrings);
 builder.Services.AddSingleton(settings.Ntfy);
 builder.Services.AddSingleton(settings.Electrolyte);
+
+builder.Services.AddCors(opt =>  opt.AddPolicy("CorsPolicy", c =>
+{ 
+    c.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+}));
+
 
 builder.Services.AddRefitClient<IElectrolyteClient>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://electrolyte.sportcity.nl/v1"))
@@ -49,22 +58,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
-
-app.MapGet("/get-clsasses", async (TokenService tokenService, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, INtfyService ntfyService, IWatchedClassService watchedClassService) =>
+app.UseCors("CorsPolicy");
+app.MapGet("/get-classes", async (TokenService tokenService, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, INtfyService ntfyService, IWatchedClassService watchedClassService) =>
     {
         try
         {
-            var ok = await watchedClassService.GetAllWatchedClassesAsync();
+            //var ok = await watchedClassService.GetAllWatchedClassesAsync();
             // await ntfyService.PublishMessage();
-            // var response = await electrolyteClient.GetScheduledClasses(
-            //     electrolyteSettings.VenueId,
-            //     false,
-            //     "2024-04-29T00:00:00.000+02:00",
-            //     "all"
-            // );
-            return Results.Ok(ok);
+            var response = await electrolyteClient.GetScheduledClasses(
+                electrolyteSettings.VenueId,
+                false,
+                "2024-05-07T00:00:00.000+02:00",
+                "all"
+            );
+            return Results.Ok(response);
         }
         catch (Exception ex)
         {
