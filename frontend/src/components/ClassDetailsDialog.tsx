@@ -1,9 +1,16 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "./ui/dialog";
 import { Button, buttonVariants } from "./ui/button";
 import { Input } from "./ui/input";
 import { calculateEndTime } from "@/utils/dateUtils";
 import { Label } from "./ui/label";
+import { ScheduledClass } from "@/types/ScheduledClass";
+
+interface ClassDetailsDialogProps {
+  open: boolean;
+  onClose: () => void;
+  classDetails: ScheduledClass | null;
+}
 
 export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
   open,

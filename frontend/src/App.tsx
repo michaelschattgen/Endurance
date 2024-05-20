@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScheduledClass } from "./types/ScheduledClass";
 import ScheduledClasses from "./components/ScheduledClasses";
 import DateTabs from "./components/DataTabs";
@@ -6,6 +6,8 @@ import { isSameDay } from "./utils/dateUtils";
 import { Checkbox } from "./components/ui/checkbox";
 
 function App() {
+  const baseURL = import.meta.env.VITE_API_BASEURL;
+
   const [onlyShowFull, setOnlyShowFull] = useState<boolean>(true);
   const [classes, setClasses] = useState<ScheduledClass[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -15,9 +17,7 @@ function App() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7289/get-classes?startDate=${encodeURIComponent(
-            selectedDate.toDateString()
-          )}`
+          `${baseURL}/get-classes?startDate=${encodeURIComponent(selectedDate.toDateString())}`
         );
         const data = await response.json();
         setClasses(data.scheduled_classes);

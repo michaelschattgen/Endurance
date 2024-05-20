@@ -10,7 +10,6 @@ using Endurance.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var settings = new Settings();
+builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.GetSection("Settings").Bind(settings);
 
 // Register settings as a singleton so it can be injected wherever needed
@@ -44,7 +44,14 @@ builder.Services.AddRefitClient<IElectrolyteClient>()
         new CustomHeadersHandler(serviceProvider));
 
 builder.Services.AddDbContext<EnduranceDbContext>(options =>
-    options.UseMySql(settings.ConnectionStrings.MySql, new MySqlServerVersion(new Version(8, 0, 21))));
+    options.UseMySql(settings.ConnectionStrings.MySql, ServerVersion.AutoDetect(settings.ConnectionStrings.MySql),
+        mySqlOptions =>
+            mySqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 10,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null)
+    )
+);
 
 builder.Services.AddScoped<IWatchedClassRepository, WatchedClassRepository>();
 builder.Services.AddScoped<IWatchedClassService, WatchedClassService>();
