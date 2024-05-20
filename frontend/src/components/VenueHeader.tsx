@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useVenue } from "@/VenueContext";
 
 interface VenuesProps {
@@ -13,9 +13,9 @@ const VenueHeader: React.FC<VenuesProps> = ({ onClick }) => {
   return (
     <>
       {venue && (
-        <Button variant="outline" onClick={onClick}>
+        <Button variant="ghost" onClick={onClick}>
           {venue.name}
-          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+          <ChevronRight className="ml-1 h-4 w-4 opacity-50" />
         </Button>
       )}
     </>

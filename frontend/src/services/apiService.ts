@@ -22,7 +22,7 @@ async function fetchVenues(): Promise<Venue[]> {
 async function fetchScheduledClasses(venueId: string, startDate: Date): Promise<any> {
   const response = await fetch(
     `${baseURL}/get-classes?venueId=${venueId}&startDate=${encodeURIComponent(
-      startDate.toDateString()
+      startDate.toISOString().split("T")[0]
     )}`
   );
   if (!response.ok) {
