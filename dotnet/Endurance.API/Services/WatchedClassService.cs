@@ -37,8 +37,30 @@ public class WatchedClassService : IWatchedClassService
         await _watchedClassRepository.AddWatchedClass(watchedClassEntity);
     }
 
-    public async Task<List<WatchedClassEntity>> GetAllWatchedClassesAsync()
+    public async Task DisableWatcher(int id)
     {
-        return await _watchedClassRepository.GetAllAsync(true);
+        await _watchedClassRepository.DisableWatchedClass(id);
+    }
+
+    public async Task<List<WatchedClassModel>> GetAllWatchedClassesAsync()
+    {
+        var response = await _watchedClassRepository.GetAllAsync(true);
+
+        return response.Select(x => new WatchedClassModel
+        {
+            VenueId = x.VenueId,
+            ClassId = x.ClassId,
+            IsActive = x.IsActive,
+            StartDateTime = x.StartDateTime,
+            NotifierSettings = new NotifierSettingsEntity
+            {
+                Id = x.NotifierSettingsId,
+                Settings = x.NotifierSettings.Settings,
+                Type = x.NotifierSettings.Type,
+                CreatedAt = x.NotifierSettings.CreatedAt
+            },
+            CreatedAt = x.CreatedAt,
+            Id = x.Id
+        }).ToList();
     }
 }

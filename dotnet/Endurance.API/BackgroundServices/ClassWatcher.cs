@@ -1,6 +1,6 @@
 ﻿using Endurance.API.Clients;
 using Endurance.API.Interfaces;
-using Endurance.API.Models.Database;
+using Endurance.API.Models;
 using Endurance.API.Models.Settings;
 
 namespace Endurance.API.BackgroundServices;
@@ -9,15 +9,13 @@ public class ClassWatcher : BackgroundService
 {
     private readonly ILogger<ClassWatcher> _logger;
     private readonly IElectrolyteClient _electrolyteClient;
-    private readonly ElectrolyteSettings _electrolyteSettings;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
 
-    public ClassWatcher(ILogger<ClassWatcher> logger, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, IServiceScopeFactory serviceScopeFactory)
+    public ClassWatcher(ILogger<ClassWatcher> logger, IElectrolyteClient electrolyteClient, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _electrolyteClient = electrolyteClient;
-        _electrolyteSettings = electrolyteSettings;
         _serviceScopeFactory = serviceScopeFactory;
     }
     
@@ -31,6 +29,7 @@ public class ClassWatcher : BackgroundService
                 {
                     // I shouldn't resolve multiple services in here (https://stackoverflow.com/a/70144027)
                     var watchedClassService = scope.ServiceProvider.GetService<IWatchedClassService>();
+                    var notifyService = scope.ServiceProvider.GetService<INotifyService>();
                     var watchedClasses = await watchedClassService.GetAllWatchedClassesAsync();
                     if (watchedClasses.Count == 0)
                     {
@@ -58,13 +57,19 @@ public class ClassWatcher : BackgroundService
 
                             foreach (var watchedClass in importantWatchedClasses)
                             {
-                                var matchingClass =
-                                    classes.ScheduledClasses.FirstOrDefault(x => x.Id == watchedClass.ClassId);
+                                var matchingClass = classes.ScheduledClasses.FirstOrDefault(x => x.Id == watchedClass.ClassId);
                                 if (matchingClass is not null)
                                 {
                                     if (matchingClass.SpotsAvailable > 0)
                                     {
-                                        // Send noti
+                                        ClassInfoModel classInfoModel = new ClassInfoModel
+                                        {
+                                            Name = matchingClass.Activity.Name,
+                                            StartDateTime = matchingClass.StartTime,
+                                            VenueName = matchingClass.VenueName
+                                        };
+                                        
+                                        notifyService.Notify(watchedClass, classInfoModel);
                                     }
                                 }
                             }
@@ -82,7 +87,7 @@ public class ClassWatcher : BackgroundService
         }
     }
     
-    public Dictionary<string, HashSet<DateTime>> GetUniqueVenuesAndDays(List<WatchedClassEntity> watchedClasses)
+    public Dictionary<string, HashSet<DateTime>> GetUniqueVenuesAndDays(List<WatchedClassModel> watchedClasses)
     {
             var venueDayMap = new Dictionary<string, HashSet<DateTime>>();
 

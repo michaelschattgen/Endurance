@@ -20,7 +20,6 @@ public class NtfyService : INtfyService
         var client = new Client(_ntfySettings.BaseUrl);
         var user = new User(_ntfySettings.Username, _ntfySettings.Password);
 
-        // Publish a message to the "test" topic
         var message = new SendingMessage
         {
             Title = "Spot available",

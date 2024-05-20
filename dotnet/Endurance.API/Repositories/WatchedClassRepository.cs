@@ -21,6 +21,18 @@ public class WatchedClassRepository : IWatchedClassRepository
         return watchedClassEntity;
     }
 
+    public async Task DisableWatchedClass(int id)
+    {
+        var watchedClass = await _context.WatchedClasses.FirstOrDefaultAsync(wc => wc.Id == id);
+        
+        if (watchedClass != null)
+        {
+            watchedClass.IsActive = false;
+            _context.Update(watchedClass);
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public async Task<List<WatchedClassEntity>> GetAllAsync(bool onlyActive)
     {
         return await _context.WatchedClasses

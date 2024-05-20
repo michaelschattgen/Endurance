@@ -25,7 +25,7 @@ public class WatchedClassEntity
     public DateTime StartDateTime { get; set; }
 
     [Column("notifier_settings_id")]
-    public int? NotifierSettingsId { get; set; }
+    public int NotifierSettingsId { get; set; }
 
     [ForeignKey("NotifierSettingsId")]
     public NotifierSettingsEntity NotifierSettings { get; set; }
