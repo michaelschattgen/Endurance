@@ -56,10 +56,7 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onClose} modal>
       <DialogContent className="mt-4 font-geist">
-        <DialogHeader
-          tabIndex={-1}
-          className="flex justify-between space-x-4 text-center sm:text-left"
-        >
+        <DialogHeader className="flex justify-between space-x-4 text-center sm:text-left">
           <div className="text-left flex-1">
             <h2 className="text-lg font-bold">Get notified for this class</h2>
             <p className="text-sm text-muted-foreground">
@@ -95,25 +92,26 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
           </Label>
           <Input
             id="name"
-            autoFocus
             className="col-span-3"
             placeholder="Email"
             type="email"
             value={email}
+            tabIndex={-1}
+            autoComplete="email"
             disabled={loading}
             onChange={(e: { target: { value: React.SetStateAction<string> } }) =>
               setEmail(e.target.value)
             }
           />
         </div>
-        <DialogFooter className="mt-4 flex justify-end space-x-2">
-          <Button onClick={onClose} className={buttonVariants({ variant: "secondary" })}>
+        <DialogFooter className="mt-4 flex justify-end md:space-x-2">
+          <Button onClick={onClose} className={`mt-2 ${buttonVariants({ variant: "secondary" })}`}>
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={loading}
-            className={buttonVariants({ variant: "default" })}
+            className={`mt-2 ${buttonVariants({ variant: "default" })}`}
           >
             {loading ? (
               <>
