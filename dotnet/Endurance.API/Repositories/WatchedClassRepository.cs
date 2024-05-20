@@ -21,10 +21,11 @@ public class WatchedClassRepository : IWatchedClassRepository
         return watchedClassEntity;
     }
 
-    public async Task<List<WatchedClassEntity>> GetAllAsync()
+    public async Task<List<WatchedClassEntity>> GetAllAsync(bool onlyActive)
     {
         return await _context.WatchedClasses
             .Include(w => w.NotifierSettings)
+            .Where(x => x.StartDateTime > DateTime.Now && (!onlyActive || x.IsActive))
             .ToListAsync();
     }
 }

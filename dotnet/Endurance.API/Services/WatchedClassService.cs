@@ -16,13 +16,14 @@ public class WatchedClassService : IWatchedClassService
         _watchedClassRepository = watchedClassRepository;
     }
 
-    public async Task AddEmailWatcher(string venueId, string classId, string emailAddress)
+    public async Task AddEmailWatcher(string venueId, string classId, string emailAddress, DateTime startDateTime)
     {
         var watchedClassEntity = new WatchedClassEntity
         {
             VenueId = venueId,
             ClassId = classId,
             IsActive = true,
+            StartDateTime = startDateTime,
             NotifierSettings = new NotifierSettingsEntity
             {
                 Type = NotifierType.Email,
@@ -38,6 +39,6 @@ public class WatchedClassService : IWatchedClassService
 
     public async Task<List<WatchedClassEntity>> GetAllWatchedClassesAsync()
     {
-        return await _watchedClassRepository.GetAllAsync();
+        return await _watchedClassRepository.GetAllAsync(true);
     }
 }

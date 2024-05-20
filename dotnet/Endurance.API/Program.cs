@@ -1,4 +1,5 @@
 using Endurance.API;
+using Endurance.API.BackgroundServices;
 using Endurance.API.Clients;
 using Endurance.API.Interfaces;
 using Endurance.API.Interfaces.Repositories;
@@ -51,6 +52,8 @@ builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 builder.Services.AddTransient<INtfyService, NtfyService>();
 builder.Services.AddScoped<TokenService>();
 
+builder.Services.AddHostedService<ClassWatcher>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,7 +64,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
-app.MapGet("/get-classes", async ([FromQuery] DateTime startDate, TokenService tokenService, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, INtfyService ntfyService, IWatchedClassService watchedClassService) =>
+app.MapGet("/get-classes", async ([FromQuery] DateTime startDate, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, INtfyService ntfyService, IWatchedClassService watchedClassService) =>
     {
         try
         {
@@ -89,7 +92,7 @@ app.MapPost("/add-classes", async (AddWatchedClassRequest addWatchedClassRequest
         try
         {
             await watchedClassService.AddEmailWatcher(addWatchedClassRequest.VenueId, addWatchedClassRequest.ClassId,
-                addWatchedClassRequest.EmailAddress);
+                addWatchedClassRequest.EmailAddress, addWatchedClassRequest.StartDateTime);
             return Results.Ok();
         }
         catch (Exception ex)
