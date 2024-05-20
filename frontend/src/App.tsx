@@ -9,11 +9,16 @@ function App() {
   const [onlyShowFull, setOnlyShowFull] = useState<boolean>(true);
   const [classes, setClasses] = useState<ScheduledClass[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [refreshNeeded, setRefreshNeeded] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://localhost:7289/get-classes");
+        const response = await fetch(
+          `https://localhost:7289/get-classes?startDate=${encodeURIComponent(
+            selectedDate.toDateString()
+          )}`
+        );
         const data = await response.json();
         setClasses(data.scheduled_classes);
       } catch (error) {
@@ -22,10 +27,12 @@ function App() {
     };
 
     fetchData();
-  }, []);
+    setRefreshNeeded(false);
+  }, [refreshNeeded]);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
+    setRefreshNeeded(true);
   };
 
   const handleCheckboxChange = () => {

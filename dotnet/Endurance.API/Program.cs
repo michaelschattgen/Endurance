@@ -6,6 +6,7 @@ using Endurance.API.Models;
 using Endurance.API.Models.Settings;
 using Endurance.API.Repositories;
 using Endurance.API.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -60,16 +61,17 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
-app.MapGet("/get-classes", async (TokenService tokenService, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, INtfyService ntfyService, IWatchedClassService watchedClassService) =>
+app.MapGet("/get-classes", async ([FromQuery] DateTime startDate, TokenService tokenService, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, INtfyService ntfyService, IWatchedClassService watchedClassService) =>
     {
         try
         {
+            var formattedStartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
             //var ok = await watchedClassService.GetAllWatchedClassesAsync();
             // await ntfyService.PublishMessage();
             var response = await electrolyteClient.GetScheduledClasses(
                 electrolyteSettings.VenueId,
                 false,
-                "2024-05-20T00:00:00.000+02:00",
+                formattedStartDate,
                 "all"
             );
             return Results.Ok(response);
