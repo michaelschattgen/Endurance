@@ -84,4 +84,20 @@ app.MapGet("/get-classes", async ([FromQuery] DateTime startDate, TokenService t
     .WithName("GetClasses")
     .WithOpenApi();
 
+app.MapPost("/add-classes", async (AddWatchedClassRequest addWatchedClassRequest, IWatchedClassService watchedClassService) =>
+    {
+        try
+        {
+            await watchedClassService.AddEmailWatcher(addWatchedClassRequest.VenueId, addWatchedClassRequest.ClassId,
+                addWatchedClassRequest.EmailAddress);
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
+    })
+    .WithName("AddClass")
+    .WithOpenApi();
+
 app.Run();

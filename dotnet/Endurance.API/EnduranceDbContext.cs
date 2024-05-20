@@ -5,15 +5,15 @@ namespace Endurance.API;
 
 public class EnduranceDbContext : DbContext
 {
-    public DbSet<NotifierSettingsModel> NotifierSettings { get; set; }
-    public DbSet<WatchedClassModel> WatchedClasses { get; set; }
+    public DbSet<NotifierSettingsEntity> NotifierSettings { get; set; }
+    public DbSet<WatchedClassEntity> WatchedClasses { get; set; }
 
     public EnduranceDbContext(DbContextOptions<EnduranceDbContext> options) 
         : base(options) { }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<NotifierSettingsModel>(entity =>
+        modelBuilder.Entity<NotifierSettingsEntity>(entity =>
         {
             entity.Property(e => e.Settings).HasColumnType("json");
         });

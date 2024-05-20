@@ -4,5 +4,6 @@ namespace Endurance.API.Interfaces.Repositories;
 
 public interface IWatchedClassRepository
 {
-    Task<List<WatchedClassModel>> GetAllAsync();
+    Task<WatchedClassEntity> AddWatchedClass(WatchedClassEntity watchedClassEntity);
+    Task<List<WatchedClassEntity>> GetAllAsync();
 }

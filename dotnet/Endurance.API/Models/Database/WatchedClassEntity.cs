@@ -4,16 +4,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Endurance.API.Models.Database;
 
 [Table("watched_classes")]
-public class WatchedClassModel
+public class WatchedClassEntity
 {
     [Key]
     public int Id { get; set; }
 
     [Column("venue_id")]
-    public int VenueId { get; set; }
+    public string VenueId { get; set; }
     
     [Column("class_id")]
-    public int ClassId { get; set; }
+    public string ClassId { get; set; }
     
     [Column("is_active")]
     public bool IsActive { get; set; }
@@ -25,5 +25,5 @@ public class WatchedClassModel
     public int? NotifierSettingsId { get; set; }
 
     [ForeignKey("NotifierSettingsId")]
-    public NotifierSettingsModel NotifierSettings { get; set; }
+    public NotifierSettingsEntity NotifierSettings { get; set; }
 }

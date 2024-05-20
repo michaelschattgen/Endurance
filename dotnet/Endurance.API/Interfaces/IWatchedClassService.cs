@@ -4,5 +4,6 @@ namespace Endurance.API.Interfaces;
 
 public interface IWatchedClassService
 {
-    Task<List<WatchedClassModel>> GetAllWatchedClassesAsync();
+    Task AddEmailWatcher(string venueId, string classId, string emailAddress);
+    Task<List<WatchedClassEntity>> GetAllWatchedClassesAsync();
 }

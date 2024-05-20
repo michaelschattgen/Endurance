@@ -1,5 +1,8 @@
-﻿using Endurance.API.Interfaces;
+﻿using System.Text.Json;
+using Endurance.API.Enums;
+using Endurance.API.Interfaces;
 using Endurance.API.Interfaces.Repositories;
+using Endurance.API.Models;
 using Endurance.API.Models.Database;
 
 namespace Endurance.API.Services;
@@ -13,7 +16,27 @@ public class WatchedClassService : IWatchedClassService
         _watchedClassRepository = watchedClassRepository;
     }
 
-    public async Task<List<WatchedClassModel>> GetAllWatchedClassesAsync()
+    public async Task AddEmailWatcher(string venueId, string classId, string emailAddress)
+    {
+        var watchedClassEntity = new WatchedClassEntity
+        {
+            VenueId = venueId,
+            ClassId = classId,
+            IsActive = true,
+            NotifierSettings = new NotifierSettingsEntity
+            {
+                Type = NotifierType.Email,
+                Settings = JsonSerializer.Serialize(new EmailNotifierSettings
+                {
+                    Email = emailAddress
+                })
+            }
+        };
+
+        await _watchedClassRepository.AddWatchedClass(watchedClassEntity);
+    }
+
+    public async Task<List<WatchedClassEntity>> GetAllWatchedClassesAsync()
     {
         return await _watchedClassRepository.GetAllAsync();
     }

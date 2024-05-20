@@ -5,7 +5,7 @@ using Endurance.API.Enums;
 namespace Endurance.API.Models.Database;
 
 [Table("notifier_settings")]
-public class NotifierSettingsModel
+public class NotifierSettingsEntity
 {
     [Key]
     public int Id { get; set; }
@@ -14,7 +14,7 @@ public class NotifierSettingsModel
     public NotifierType Type { get; set; }
 
     [Column("settings")]
-    public string Settings { get; set; } // JSON field
+    public string Settings { get; set; }
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;

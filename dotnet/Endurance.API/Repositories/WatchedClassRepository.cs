@@ -13,7 +13,15 @@ public class WatchedClassRepository : IWatchedClassRepository
         _context = context;
     }
 
-    public async Task<List<WatchedClassModel>> GetAllAsync()
+    public async Task<WatchedClassEntity> AddWatchedClass(WatchedClassEntity watchedClassEntity)
+    {
+        _context.WatchedClasses.Add(watchedClassEntity);
+        await _context.SaveChangesAsync();
+
+        return watchedClassEntity;
+    }
+
+    public async Task<List<WatchedClassEntity>> GetAllAsync()
     {
         return await _context.WatchedClasses
             .Include(w => w.NotifierSettings)
