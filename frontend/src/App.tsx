@@ -5,29 +5,23 @@ import DateTabs from "./components/DataTabs";
 import { isSameDay } from "./utils/dateUtils";
 import { Checkbox } from "./components/ui/checkbox";
 import { Toaster } from "sonner";
+import { fetchScheduledClasses } from "./services/apiService";
 
 function App() {
-  const baseURL = import.meta.env.VITE_API_BASEURL;
-
   const [onlyShowFull, setOnlyShowFull] = useState<boolean>(true);
   const [classes, setClasses] = useState<ScheduledClass[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshNeeded, setRefreshNeeded] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${baseURL}/get-classes?startDate=${encodeURIComponent(selectedDate.toDateString())}`
-        );
-        const data = await response.json();
+    fetchScheduledClasses(selectedDate)
+      .then((data) => {
         setClasses(data.scheduled_classes);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+      })
+      .catch((error) => {
+        console.error("Failed to fetch classes:", error);
+      })
+      .finally(() => {});
     setRefreshNeeded(false);
   }, [refreshNeeded]);
 

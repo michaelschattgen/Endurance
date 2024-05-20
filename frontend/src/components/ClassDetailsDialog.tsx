@@ -6,6 +6,7 @@ import { calculateEndTime } from "@/utils/dateUtils";
 import { Label } from "./ui/label";
 import { ScheduledClass } from "@/types/ScheduledClass";
 import { toast } from "sonner";
+import { addClass } from "@/services/apiService";
 
 interface ClassDetailsDialogProps {
   open: boolean;
@@ -20,7 +21,6 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
 }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const baseURL = import.meta.env.VITE_API_BASEURL;
 
   if (!classDetails) return null;
 
@@ -33,41 +33,33 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
       startDateTime: classDetails.startTime,
     };
 
-    try {
-      const response = await fetch(baseURL + "/add-classes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "*/*",
-        },
-        body: JSON.stringify(payload),
+    addClass(payload)
+      .then(() => {
+        setLoading(false);
+
+        onClose();
+
+        toast("Added notification for class", {
+          description: `${classDetails.activity.name} on ${new Date(
+            classDetails.startTime
+          ).toDateString()} at ${new Date(classDetails.startTime).toLocaleTimeString([], {
+            timeStyle: "short",
+          })}`,
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to add class:", error);
+        setLoading(false);
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error, status: ${response.status}`);
-      }
-
-      onClose();
-
-      toast("Added notification for class", {
-        description: `${classDetails.activity.name} on ${new Date(
-          classDetails.startTime
-        ).toDateString()} at ${new Date(classDetails.startTime).toLocaleTimeString([], {
-          timeStyle: "short",
-        })}`,
-      });
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Failed to add class. Please try again.");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose} modal>
       <DialogContent className="mt-4 font-geist">
-        <DialogHeader className="flex justify-between space-x-4 text-center sm:text-left">
+        <DialogHeader
+          tabIndex={-1}
+          className="flex justify-between space-x-4 text-center sm:text-left"
+        >
           <div className="text-left flex-1">
             <h2 className="text-lg font-bold">Get notified for this class</h2>
             <p className="text-sm text-muted-foreground">
@@ -103,8 +95,10 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
           </Label>
           <Input
             id="name"
+            autoFocus
             className="col-span-3"
             placeholder="Email"
+            type="email"
             value={email}
             disabled={loading}
             onChange={(e: { target: { value: React.SetStateAction<string> } }) =>
