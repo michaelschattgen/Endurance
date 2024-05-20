@@ -3,6 +3,7 @@ using System.Net.Mail;
 using System.Text.Json;
 using Endurance.API.Interfaces;
 using Endurance.API.Models;
+using Endurance.API.Models.EmailTemplate;
 using Endurance.API.Models.Settings;
 
 namespace Endurance.API.Services;
@@ -26,11 +27,17 @@ public class EmailService : IEmailService
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(_smtpSettings.Username, _smtpSettings.Password);
 
+            var body = BasicEmailTemplate.Body;
+            body = body.Replace("{ActivityName}", classInfoModel.Name)
+                .Replace("{Day}", classInfoModel.StartDateTime.ToShortDateString())
+                .Replace("{Time}", classInfoModel.StartDateTime.ToShortTimeString())
+                .Replace("{Venue}", classInfoModel.VenueName);
+
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(_smtpSettings.From),
                 Subject = "There's a spot available!",
-                Body = $"You're receiving this email because you've created a watcher for a class at Sportcity. We want to let you know that there's a spot available for <b>{classInfoModel.Name}</b> on <b>{classInfoModel.StartDateTime.ToShortDateString()}</b> at <b>{classInfoModel.VenueName}</b>.",
+                Body = body,
                 IsBodyHtml = true
             };
             mailMessage.To.Add(emailNotifierSettings!.Email);
