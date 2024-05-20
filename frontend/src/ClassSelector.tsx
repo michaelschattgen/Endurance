@@ -6,6 +6,7 @@ import { ScheduledClass } from "./types/ScheduledClass";
 import { isSameDay } from "./utils/dateUtils";
 import { Checkbox } from "./components/ui/checkbox";
 import { useVenue } from "./VenueContext";
+import moment from "moment";
 
 function ClassSelector() {
   const { venue } = useVenue();
@@ -19,7 +20,8 @@ function ClassSelector() {
     setLoading(true);
     if (!venue) return;
 
-    fetchScheduledClasses(venue?.id, selectedDate)
+    const localDate = moment(selectedDate).format("YYYY-MM-DD");
+    fetchScheduledClasses(venue?.id, localDate)
       .then((data) => {
         setClasses(data);
       })

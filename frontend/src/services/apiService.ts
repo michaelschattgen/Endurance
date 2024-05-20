@@ -19,11 +19,9 @@ async function fetchVenues(): Promise<Venue[]> {
   return data;
 }
 
-async function fetchScheduledClasses(venueId: string, startDate: Date): Promise<any> {
+async function fetchScheduledClasses(venueId: string, startDate: string): Promise<any> {
   const response = await fetch(
-    `${baseURL}/get-classes?venueId=${venueId}&startDate=${encodeURIComponent(
-      startDate.toISOString().split("T")[0]
-    )}`
+    `${baseURL}/get-classes?venueId=${venueId}&startDate=${encodeURIComponent(startDate)}`
   );
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
