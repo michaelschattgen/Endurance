@@ -10,7 +10,7 @@ public class ClassWatcher : BackgroundService
     private readonly ILogger<ClassWatcher> _logger;
     private readonly IElectrolyteClient _electrolyteClient;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-
+    private const int RETRY_INTERVAL_MINUTES = 5;
 
     public ClassWatcher(ILogger<ClassWatcher> logger, IElectrolyteClient electrolyteClient, IServiceScopeFactory serviceScopeFactory)
     {
@@ -33,7 +33,7 @@ public class ClassWatcher : BackgroundService
                     var watchedClasses = await watchedClassService.GetAllWatchedClassesAsync();
                     if (watchedClasses.Count == 0)
                     {
-                        await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                        await Task.Delay(TimeSpan.FromMinutes(RETRY_INTERVAL_MINUTES), stoppingToken);
                     }
 
                     var venueDayMap = GetUniqueVenuesAndDays(watchedClasses);
@@ -76,13 +76,13 @@ public class ClassWatcher : BackgroundService
                         }
                     }
                     
-                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                    await Task.Delay(TimeSpan.FromMinutes(RETRY_INTERVAL_MINUTES), stoppingToken);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError("Error refreshing cache: ", e.Message, e.InnerException);
-                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                _logger.LogError("Error refreshing scheduled classes: ", e.Message, e.InnerException);
+                await Task.Delay(TimeSpan.FromMinutes(RETRY_INTERVAL_MINUTES), stoppingToken);
             }
         }
     }

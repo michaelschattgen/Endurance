@@ -4,6 +4,7 @@ import ScheduledClasses from "./components/ScheduledClasses";
 import DateTabs from "./components/DataTabs";
 import { isSameDay } from "./utils/dateUtils";
 import { Checkbox } from "./components/ui/checkbox";
+import { Toaster } from "sonner";
 
 function App() {
   const baseURL = import.meta.env.VITE_API_BASEURL;
@@ -63,6 +64,8 @@ function App() {
         </div>
         <ScheduledClasses classes={filteredClasses} />
       </div>
+
+      <Toaster />
     </div>
   );
 }

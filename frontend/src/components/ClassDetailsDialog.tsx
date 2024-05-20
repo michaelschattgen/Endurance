@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { calculateEndTime } from "@/utils/dateUtils";
 import { Label } from "./ui/label";
 import { ScheduledClass } from "@/types/ScheduledClass";
+import { toast } from "sonner";
 
 interface ClassDetailsDialogProps {
   open: boolean;
@@ -18,10 +19,50 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
   classDetails,
 }) => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const baseURL = import.meta.env.VITE_API_BASEURL;
 
   if (!classDetails) return null;
 
-  console.log(classDetails);
+  const handleSave = async () => {
+    setLoading(true);
+    const payload = {
+      venueId: classDetails.venueId,
+      classId: classDetails.id,
+      emailAddress: email,
+      startDateTime: classDetails.startTime,
+    };
+
+    try {
+      const response = await fetch(baseURL + "/add-classes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "*/*",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error, status: ${response.status}`);
+      }
+
+      onClose();
+
+      toast("Added notification for class", {
+        description: `${classDetails.activity.name} on ${new Date(
+          classDetails.startTime
+        ).toDateString()} at ${new Date(classDetails.startTime).toLocaleTimeString([], {
+          timeStyle: "short",
+        })}`,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to add class. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose} modal>
@@ -65,6 +106,7 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
             className="col-span-3"
             placeholder="Email"
             value={email}
+            disabled={loading}
             onChange={(e: { target: { value: React.SetStateAction<string> } }) =>
               setEmail(e.target.value)
             }
@@ -75,10 +117,37 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={() => alert("Save functionality not implemented")}
+            onClick={handleSave}
+            disabled={loading}
             className={buttonVariants({ variant: "default" })}
           >
-            Save
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Save
+              </>
+            ) : (
+              "Save"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
