@@ -45,7 +45,7 @@ function App() {
   });
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className={`flex justify-center min-h-screen bg-gray-100 font-geist`}>
       <div className="w-full max-w-4xl p-5 bg-white shadow-lg rounded-lg">
         <DateTabs currentDate={new Date()} onSelect={handleDateSelect} />
         <div className="flex items-center space-x-2 my-4">

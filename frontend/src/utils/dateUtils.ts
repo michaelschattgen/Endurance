@@ -11,3 +11,9 @@ export const isSameDay = (date1: Date, date2: Date): boolean => {
     date1.getFullYear() === date2.getFullYear()
   );
 };
+
+export const calculateEndTime = (startTime: string, durationSeconds: number) => {
+  const startDate = new Date(startTime);
+  startDate.setSeconds(startDate.getSeconds() + durationSeconds);
+  return startDate.toLocaleTimeString([], { timeStyle: "short" });
+};

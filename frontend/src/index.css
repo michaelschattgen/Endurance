@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('assets/fonts/Geist-Regular.woff2') format('woff2'),
+       url('assets/fonts/Geist-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
