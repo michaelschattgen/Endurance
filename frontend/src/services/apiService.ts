@@ -26,10 +26,12 @@ async function addClass(requestData: AddClassRequest): Promise<any> {
     },
     body: JSON.stringify(requestData),
   });
+
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-  return response.json();
+
+  return;
 }
 
 export { fetchScheduledClasses, addClass };

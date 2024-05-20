@@ -2,12 +2,14 @@ import { ScheduledClass } from "@/types/ScheduledClass";
 import React, { useState } from "react";
 import { ClassDetailsDialog } from "./ClassDetailsDialog";
 import { calculateEndTime } from "@/utils/dateUtils";
+import { Badge, badgeVariants } from "./ui/badge";
 
 interface ScheduledClassesProps {
   classes: ScheduledClass[];
+  showFullBadge: boolean;
 }
 
-const ScheduledClasses: React.FC<ScheduledClassesProps> = ({ classes }) => {
+const ScheduledClasses: React.FC<ScheduledClassesProps> = ({ classes, showFullBadge }) => {
   const [selectedClass, setSelectedClass] = useState<ScheduledClass | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -39,7 +41,15 @@ const ScheduledClasses: React.FC<ScheduledClassesProps> = ({ classes }) => {
               </div>
             </div>
             <div className="px-4">
-              <h2 className="text-md font-bold">{cls.activity.name}</h2>
+              <div className="inline-flex items-center">
+                <h2 className="text-md font-bold">{cls.activity.name}</h2>
+                {showFullBadge && cls.spotsAvailable == 0 && (
+                  <Badge className={`ml-2 font-thin ${badgeVariants({ variant: "destructive" })}`}>
+                    Full
+                  </Badge>
+                )}
+              </div>
+
               <p className="line-clamp-2 overflow-hidden text-ellipsis">
                 {cls.activity.description}
               </p>
