@@ -21,7 +21,7 @@ function ClassSelector() {
 
     fetchScheduledClasses(venue?.id, selectedDate)
       .then((data) => {
-        setClasses(data.scheduled_classes);
+        setClasses(data);
       })
       .catch((error) => {
         console.error("Failed to fetch classes:", error);

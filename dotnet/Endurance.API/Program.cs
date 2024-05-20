@@ -101,7 +101,20 @@ app.MapGet("/get-classes", async([FromQuery] string venueId, [FromQuery] DateTim
                 formattedStartDate,
                 "all"
             );
-            return Results.Ok(response);
+
+            var classes = response.ScheduledClasses.Select(x => new ScheduledClassModel()
+            {
+                Id = x.Id,
+                VenueId = x.VenueId,
+                Description = x.Activity.Description,
+                DurationSeconds = x.DurationSeconds,
+                SpotsAvailable = x.SpotsAvailable,
+                StartTime = x.StartTime,
+                ClassTypeIcon = x.ClassTypeIcon,
+                Activity = x.Activity
+            });
+            
+            return Results.Ok(classes);
         }
         catch (Exception ex)
         {
