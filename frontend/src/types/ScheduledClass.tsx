@@ -1,5 +1,13 @@
+import { Activity } from "./Activity";
+
 export interface ScheduledClass {
+  id: string;
   name: string;
   description: string;
-  startDate: string; // Adjust the type if necessary (e.g., Date)
+  startTime: string;
+  durationSeconds: number;
+  classTypeIcon: string;
+  spotsAvailable: number;
+
+  activity: Activity;
 }

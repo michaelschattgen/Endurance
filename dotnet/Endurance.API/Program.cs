@@ -69,7 +69,7 @@ app.MapGet("/get-classes", async (TokenService tokenService, IElectrolyteClient 
             var response = await electrolyteClient.GetScheduledClasses(
                 electrolyteSettings.VenueId,
                 false,
-                "2024-05-07T00:00:00.000+02:00",
+                "2024-05-20T00:00:00.000+02:00",
                 "all"
             );
             return Results.Ok(response);
