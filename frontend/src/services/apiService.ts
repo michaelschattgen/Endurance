@@ -1,3 +1,5 @@
+import { Venue } from "@/types/Venue";
+
 interface AddClassRequest {
   venueId: string;
   classId: string;
@@ -7,9 +9,21 @@ interface AddClassRequest {
 
 const baseURL = import.meta.env.VITE_API_BASEURL;
 
-async function fetchScheduledClasses(startDate: Date): Promise<any> {
+async function fetchVenues(): Promise<Venue[]> {
+  const response = await fetch(`${baseURL}/get-venues`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data: Venue[] = await response.json();
+  return data;
+}
+
+async function fetchScheduledClasses(venueId: string, startDate: Date): Promise<any> {
   const response = await fetch(
-    `${baseURL}/get-classes?startDate=${encodeURIComponent(startDate.toDateString())}`
+    `${baseURL}/get-classes?venueId=${venueId}&startDate=${encodeURIComponent(
+      startDate.toDateString()
+    )}`
   );
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -34,4 +48,4 @@ async function addClass(requestData: AddClassRequest): Promise<any> {
   return;
 }
 
-export { fetchScheduledClasses, addClass };
+export { fetchScheduledClasses, addClass, fetchVenues };

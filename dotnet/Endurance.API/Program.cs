@@ -74,15 +74,29 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
-app.MapGet("/get-classes", async ([FromQuery] DateTime startDate, IElectrolyteClient electrolyteClient, ElectrolyteSettings electrolyteSettings, INtfyService ntfyService, IWatchedClassService watchedClassService) =>
+
+app.MapGet("/get-venues", async (IElectrolyteClient electrolyteClient) =>
+    {
+        try
+        {
+            var response = await electrolyteClient.GetVenues();
+            return Results.Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
+    })
+    .WithName("GetVenues")
+    .WithOpenApi();
+
+app.MapGet("/get-classes", async([FromQuery] string venueId, [FromQuery] DateTime startDate, IElectrolyteClient electrolyteClient) =>
     {
         try
         {
             var formattedStartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
-            //var ok = await watchedClassService.GetAllWatchedClassesAsync();
-            // await ntfyService.PublishMessage();
             var response = await electrolyteClient.GetScheduledClasses(
-                electrolyteSettings.VenueId,
+                venueId,
                 false,
                 formattedStartDate,
                 "all"

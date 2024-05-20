@@ -15,4 +15,7 @@ public interface IElectrolyteClient
         [AliasAs("exclude_fully_booked")] bool excludeFullyBooked,
         [AliasAs("date")] string date,
         [AliasAs("category")] string category);
+
+    [Get("/venues")]
+    Task<Venue[]> GetVenues();
 }
