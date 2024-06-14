@@ -26,9 +26,7 @@ builder.Configuration.GetSection("Settings").Bind(settings);
 
 // Register settings as a singleton so it can be injected wherever needed
 builder.Services.AddSingleton(settings.ConnectionStrings);
-builder.Services.AddSingleton(settings.Ntfy);
 builder.Services.AddSingleton(settings.Smtp);
-builder.Services.AddSingleton(settings.Electrolyte);
 
 builder.Services.AddCors(opt =>  opt.AddPolicy("CorsPolicy", c =>
 { 

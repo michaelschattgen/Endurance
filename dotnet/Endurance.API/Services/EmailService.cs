@@ -26,7 +26,7 @@ public class EmailService : IEmailService
         {
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(_smtpSettings.Username, _smtpSettings.Password);
-
+            
             var body = BasicEmailTemplate.Body;
             body = body.Replace("{ActivityName}", classInfoModel.Name)
                 .Replace("{Day}", classInfoModel.StartDateTime.ToShortDateString())
