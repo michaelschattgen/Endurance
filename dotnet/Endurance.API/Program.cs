@@ -55,7 +55,6 @@ builder.Services.AddScoped<IWatchedClassRepository, WatchedClassRepository>();
 builder.Services.AddScoped<IWatchedClassService, WatchedClassService>();
 
 builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
-builder.Services.AddTransient<INtfyService, NtfyService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<INotifyService, NotifyService>();
 builder.Services.AddScoped<TokenService>();

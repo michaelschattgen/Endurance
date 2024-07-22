@@ -26,11 +26,12 @@ public class EmailService : IEmailService
         {
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(_smtpSettings.Username, _smtpSettings.Password);
-            
+            DateTime gmtTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(classInfoModel.StartDateTime, "W. Europe Standard Time");
+
             var body = BasicEmailTemplate.Body;
             body = body.Replace("{ActivityName}", classInfoModel.Name)
-                .Replace("{Day}", classInfoModel.StartDateTime.ToShortDateString())
-                .Replace("{Time}", classInfoModel.StartDateTime.ToShortTimeString())
+                .Replace("{Day}", gmtTime.ToShortDateString())
+                .Replace("{Time}", gmtTime.ToShortTimeString())
                 .Replace("{Venue}", classInfoModel.VenueName);
 
             var mailMessage = new MailMessage
