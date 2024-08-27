@@ -22,7 +22,7 @@ public class CustomHeadersHandler(IServiceProvider serviceProvider) : Delegating
 
         request.Headers.TryAddWithoutValidation("User-Agent", "okhttp/4.12.0");
         request.Headers.TryAddWithoutValidation("Api-Version", "100.a");
-        request.Headers.TryAddWithoutValidation("App-Version", "6.4.0");
+        request.Headers.TryAddWithoutValidation("App-Version", "6.5.0");
         request.Headers.TryAddWithoutValidation("Device-Id", "cmrmH-2PR463YAiI7xEV-i");
 
         return await base.SendAsync(request, cancellationToken);
