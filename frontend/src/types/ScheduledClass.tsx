@@ -9,4 +9,5 @@ export interface ScheduledClass {
   spotsAvailable: number;
   venueId: string;
   activity: Activity;
+  capacity: number;
 }

@@ -10,6 +10,7 @@ public class ScheduledClassModel
     public int DurationSeconds { get; set; }
     public string ClassTypeIcon { get; set; }
     public int SpotsAvailable { get; set; }
+    public int Capacity { get; set; }
     public string VenueId { get; set; }
     public Activity Activity { get; set; }
 }

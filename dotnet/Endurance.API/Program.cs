@@ -106,6 +106,7 @@ app.MapGet("/get-classes", async([FromQuery] string venueId, [FromQuery] DateTim
                 Description = x.Activity.Description,
                 DurationSeconds = x.DurationSeconds,
                 SpotsAvailable = x.SpotsAvailable,
+                Capacity = x.Capacity,
                 StartTime = x.StartTime,
                 ClassTypeIcon = x.ClassTypeIcon,
                 Activity = x.Activity

@@ -1,7 +1,7 @@
 import { ScheduledClass } from "@/types/ScheduledClass";
 import React, { useState } from "react";
 import { ClassDetailsDialog } from "./ClassDetailsDialog";
-import { calculateEndTime } from "@/utils/dateUtils";
+import { formatClassDuration } from "@/utils/dateUtils";
 import { Badge, badgeVariants } from "./ui/badge";
 
 interface ScheduledClassesProps {
@@ -9,8 +9,13 @@ interface ScheduledClassesProps {
   showFullBadge: boolean;
 }
 
-const ScheduledClasses: React.FC<ScheduledClassesProps> = ({ classes, showFullBadge }) => {
-  const [selectedClass, setSelectedClass] = useState<ScheduledClass | null>(null);
+const ScheduledClasses: React.FC<ScheduledClassesProps> = ({
+  classes,
+  showFullBadge,
+}) => {
+  const [selectedClass, setSelectedClass] = useState<ScheduledClass | null>(
+    null
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleOpenDialog = (cls: ScheduledClass) => {
@@ -32,29 +37,60 @@ const ScheduledClasses: React.FC<ScheduledClassesProps> = ({ classes, showFullBa
             className="p-4 border rounded-lg grid grid-cols-[auto,1fr,auto] items-start cursor-pointer"
             onClick={() => handleOpenDialog(cls)}
           >
-            <div className="font-bold text-right pr-4">
+            <div className="font-bold text-right pr-4 min-w-24">
               <div className="text-md font-bold">
-                {new Date(cls.startTime).toLocaleTimeString([], { timeStyle: "short" })}
+                {new Date(cls.startTime).toLocaleTimeString([], {
+                  timeStyle: "short",
+                })}
               </div>
-              <div className="text-md font-bold">
-                {calculateEndTime(cls.startTime, cls.durationSeconds)}
+              <div className="text-xs text-gray-700 dark:text-gray-400">
+                {formatClassDuration(cls.durationSeconds)}
               </div>
             </div>
             <div className="px-4">
               <div className="inline-flex items-center">
                 <h2 className="text-md font-bold">{cls.activity.name}</h2>
                 {showFullBadge && cls.spotsAvailable == 0 && (
-                  <Badge className={`ml-2 font-thin ${badgeVariants({ variant: "destructive" })}`}>
+                  <Badge
+                    className={`ml-2 font-thin ${badgeVariants({
+                      variant: "destructive",
+                    })} bg-red-400`}
+                  >
                     Full
                   </Badge>
                 )}
               </div>
 
-              <p className="line-clamp-2 overflow-hidden text-ellipsis">
+              <p className="line-clamp-2 overflow-hidden text-xs text-gray-700 dark:text-gray-400">
                 {cls.activity.description}
               </p>
+
+              <div className={`flex items-center text-xs ${cls.spotsAvailable == 0 ? 'text-red-400' : 'text-gray-700'} dark:text-gray-400 mt-2 line-clamp-2 overflow-hidden`}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.8}
+                  stroke="currentColor"
+                  className="size-4 mr-1"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                  />
+                </svg>
+
+                
+                  {cls.spotsAvailable != 0 ? (
+                    <span>{cls.spotsAvailable} / {cls.capacity} spots available</span>
+
+                  ) : (
+                    <span className="text-red-400">No spots available</span>
+                  )}
+              </div>
             </div>
-            <div className="flex justify-center pl-4 align-middle">
+            <div className="flex justify-center pl-4 align-middle grayscale">
               <img width="35" src={cls.classTypeIcon} />
             </div>
           </div>

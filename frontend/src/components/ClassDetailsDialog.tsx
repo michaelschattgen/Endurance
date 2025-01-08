@@ -42,7 +42,9 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
         toast("Added notification for class", {
           description: `${classDetails.activity.name} on ${new Date(
             classDetails.startTime
-          ).toDateString()} at ${new Date(classDetails.startTime).toLocaleTimeString([], {
+          ).toDateString()} at ${new Date(
+            classDetails.startTime
+          ).toLocaleTimeString([], {
             timeStyle: "short",
           })}`,
         });
@@ -60,8 +62,8 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
           <div className="text-left flex-1">
             <h2 className="text-lg font-bold">Get notified for this class</h2>
             <p className="text-sm text-muted-foreground">
-              Enter your email address below to get notified whenever there's a spot available in
-              this class.
+              Enter your email address below to get notified whenever there's a
+              spot available in this class.
             </p>
           </div>
         </DialogHeader>
@@ -79,9 +81,19 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
             <div className="flex items-center justify-between">
               <dt className="text-muted-foreground">Time</dt>
               <dd>
-                {new Date(classDetails.startTime).toLocaleTimeString([], { timeStyle: "short" })} -{" "}
-                {calculateEndTime(classDetails.startTime, classDetails.durationSeconds)}
+                {new Date(classDetails.startTime).toLocaleTimeString([], {
+                  timeStyle: "short",
+                })}{" "}
+                -{" "}
+                {calculateEndTime(
+                  classDetails.startTime,
+                  classDetails.durationSeconds
+                )}
               </dd>
+            </div>
+            <div className="flex items-center justify-between">
+              <dt className="text-muted-foreground">Capacity</dt>
+              <dd>{classDetails.capacity}</dd>
             </div>
           </dl>
         </div>
@@ -99,13 +111,16 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
             tabIndex={-1}
             autoComplete="email"
             disabled={loading}
-            onChange={(e: { target: { value: React.SetStateAction<string> } }) =>
-              setEmail(e.target.value)
-            }
+            onChange={(e: {
+              target: { value: React.SetStateAction<string> };
+            }) => setEmail(e.target.value)}
           />
         </div>
         <DialogFooter className="mt-4 flex justify-end md:space-x-2">
-          <Button onClick={onClose} className={`mt-2 ${buttonVariants({ variant: "secondary" })}`}>
+          <Button
+            onClick={onClose}
+            className={`mt-2 ${buttonVariants({ variant: "secondary" })}`}
+          >
             Cancel
           </Button>
           <Button

@@ -1,9 +1,5 @@
-/**
- * Checks if two dates are on the same day.
- * @param date1 The first date to compare.
- * @param date2 The second date to compare.
- * @returns True if the dates are on the same day, false otherwise.
- */
+import { intervalToDuration, formatDuration } from 'date-fns';
+
 export const isSameDay = (date1: Date, date2: Date): boolean => {
   return (
     date1.getDate() === date2.getDate() &&
@@ -17,3 +13,11 @@ export const calculateEndTime = (startTime: string, durationSeconds: number) => 
   startDate.setSeconds(startDate.getSeconds() + durationSeconds);
   return startDate.toLocaleTimeString([], { timeStyle: "short" });
 };
+
+export const formatClassDuration = (seconds: number): string => {
+  const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
+  let formatted = formatDuration(duration, { format: ['days', 'hours', 'minutes'] });
+  formatted = formatted.replace(/minutes/g, 'mins');
+
+  return formatted || 'less than a minute';
+}
