@@ -27,7 +27,7 @@ const VenueSelectionComponent = () => {
   return (
     <>
       <div className="flex flex-col md:flex-row justify-between">
-        <h2 className="font-display text-xl font-extrabold text-gray-700">Select a venue</h2>
+        <h2 className="font-display text-xl font-extrabold text-gray-700 dark:text-white">Select a venue</h2>
       </div>
       <Venues venues={venues} onSelect={handleVenueSelect} />
     </>

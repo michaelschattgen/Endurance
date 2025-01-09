@@ -57,29 +57,29 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose} modal>
-      <DialogContent className="mt-4 font-geist">
+      <DialogContent className="mt-4 font-geist dark:bg-zinc-900 dark:text-white dark:border-zinc-800">
         <DialogHeader className="flex justify-between space-x-4 text-center sm:text-left">
           <div className="text-left flex-1">
             <h2 className="text-lg font-bold">Get notified for this class</h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground dark:text-zinc-400 ">
               Enter your email address below to get notified whenever there's a
               spot available in this class.
             </p>
           </div>
         </DialogHeader>
-        <div className="grid gap-3 text-sm">
-          <div className="font-semibold">Class information</div>
+        <div className="grid gap-3 text-sm ">
+          <div className="font-semibold ">Class information</div>
           <dl className="grid gap-3">
             <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">Activity</dt>
+              <dt className="text-muted-foreground dark:text-zinc-400">Activity</dt>
               <dd>{classDetails.activity.name}</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">Day</dt>
+              <dt className="text-muted-foreground dark:text-zinc-400">Day</dt>
               <dd>{new Date(classDetails.startTime).toDateString()}</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">Time</dt>
+              <dt className="text-muted-foreground dark:text-zinc-400">Time</dt>
               <dd>
                 {new Date(classDetails.startTime).toLocaleTimeString([], {
                   timeStyle: "short",
@@ -92,7 +92,7 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
               </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">Capacity</dt>
+              <dt className="text-muted-foreground dark:text-zinc-400">Capacity</dt>
               <dd>{classDetails.capacity}</dd>
             </div>
           </dl>
@@ -104,8 +104,8 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
           </Label>
           <Input
             id="name"
-            className="col-span-3"
-            placeholder="Email"
+            className="col-span-3 dark:bg-zinc-900 dark:border-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-zinc-600"
+            placeholder="Email address"
             type="email"
             value={email}
             tabIndex={-1}
@@ -119,14 +119,14 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
         <DialogFooter className="mt-4 flex justify-end md:space-x-2">
           <Button
             onClick={onClose}
-            className={`mt-2 ${buttonVariants({ variant: "secondary" })}`}
+            className={`mt-2 ${buttonVariants({ variant: "ghost" })} dark:bg-transparent dark:text-white`}
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={loading}
-            className={`mt-2 ${buttonVariants({ variant: "default" })}`}
+            className={`mt-2 ${buttonVariants({ variant: "default" })} dark:bg-zinc-800 dark:text-zinc-50`}
           >
             {loading ? (
               <>

@@ -8,6 +8,7 @@ import { Checkbox } from "./components/ui/checkbox";
 import { useVenue } from "./VenueContext";
 import moment from "moment";
 import { Loader2 } from "lucide-react";
+import DarkModeToggle from "./components/DarkModeToggle";
 
 function ClassSelector() {
   const { venue } = useVenue();
@@ -61,7 +62,7 @@ function ClassSelector() {
   return (
     <>
       <div className="flex flex-col md:flex-row justify-between">
-        <h2 className="font-display text-xl font-extrabold text-gray-700">Pick a day</h2>
+        <h2 className="font-display text-xl font-extrabold text-gray-700 dark:text-white">Pick a day</h2>
         <div className="flex items-center mt-4 md:mt-0">
           <Checkbox
             checked={hideSquash}
@@ -70,7 +71,7 @@ function ClassSelector() {
           />
           <label
             htmlFor="hideSquash"
-            className="text-sm font-medium leading-none ml-2 pr-3 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm font-medium leading-none ml-2 pr-3 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
           >
             Hide squash
           </label>
@@ -81,7 +82,7 @@ function ClassSelector() {
           />
           <label
             htmlFor="fullClasses"
-            className="text-sm font-medium leading-none ml-2 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm font-medium leading-none ml-2 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
           >
             Only show full classes
           </label>
