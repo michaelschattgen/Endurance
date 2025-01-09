@@ -8,7 +8,6 @@ import { Checkbox } from "./components/ui/checkbox";
 import { useVenue } from "./VenueContext";
 import moment from "moment";
 import { Loader2 } from "lucide-react";
-import DarkModeToggle from "./components/DarkModeToggle";
 
 function ClassSelector() {
   const { venue } = useVenue();
