@@ -12,16 +12,13 @@ const Venues: React.FC<VenuesProps> = ({ venues, onSelect }) => {
         {venues.map((venue, index) => (
           <div
             key={index}
-            className="border rounded-lg grid grid-cols-[auto,1fr,auto] items-start cursor-pointer dark:border-zinc-800"
+            className="border rounded-lg grid grid-cols-[auto,1fr,auto] items-start cursor-pointer dark:border-zinc-700 dark:hover:bg-zinc-800 hover:bg-secondary/80"
             onClick={() => onSelect(venue)}
           >
             <div className="px-4 py-2">
               <div className="inline-flex items-center">
-                <h2 className="text-md font-bold">{venue.name}</h2>
+                <h2 className="text-md font-bold py-2">{venue.name}</h2>
               </div>
-              <p className="line-clamp-2 text-xs overflow-hidden text-ellipsis opacity-30">
-                {venue.id}
-              </p>
             </div>
           </div>
         ))}

@@ -89,7 +89,9 @@ function ClassSelector() {
       </div>
 
       <DateTabs currentDate={new Date()} onSelect={handleDateSelect} />
-      <ScheduledClasses classes={filteredClasses} showFullBadge={!onlyShowFull} />
+      {!loading && (
+        <ScheduledClasses classes={filteredClasses} showFullBadge={!onlyShowFull} />
+      )}
       {loading && (
         <div className="flex items-center justify-center h-60">
           <Loader2 className="h-8 w-8 animate-spin" />
@@ -98,10 +100,10 @@ function ClassSelector() {
       {!loading && filteredClasses.length == 0 && (
         <div className="h-60 flex items-center justify-center">
           <div>
-            <h2 className="text-center text-black text-md font-semibold leading-7">
+            <h2 className="text-center text-black text-md font-semibold leading-7 dark:text-white">
               No classes found
             </h2>
-            <p className="text-center text-black text-base font-normal leading-relaxed pb-4">
+            <p className="text-center text-black text-base font-normal leading-relaxed pb-4 dark:text-white">
               Try changing the filters <br />
               to see classes
             </p>

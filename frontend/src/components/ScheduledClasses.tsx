@@ -34,7 +34,7 @@ const ScheduledClasses: React.FC<ScheduledClassesProps> = ({
         {classes.map((cls, index) => (
           <div
             key={index}
-            className="p-4 border dark:border-zinc-800 rounded-lg grid grid-cols-[auto,1fr,auto] items-start cursor-pointer"
+            className="p-4 border rounded-lg grid grid-cols-[auto,1fr,auto] dark:border-zinc-700 dark:hover:bg-zinc-800 hover:bg-secondary/80 items-start cursor-pointer"
             onClick={() => handleOpenDialog(cls)}
           >
             <div className="font-bold text-right pr-4 min-w-24">
