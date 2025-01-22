@@ -19,7 +19,11 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
   onClose,
   classDetails,
 }) => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    const defaultEmail = localStorage.getItem("emailAddress");
+    return defaultEmail ?? "";
+  });
+  
   const [loading, setLoading] = useState(false);
 
   if (!classDetails) return null;
@@ -38,6 +42,8 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
         setLoading(false);
 
         onClose();
+
+        localStorage.setItem("emailAddress", email);
 
         toast("Added notification for class", {
           description: `${classDetails.activity.name} on ${new Date(
