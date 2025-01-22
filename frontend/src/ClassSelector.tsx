@@ -90,7 +90,7 @@ function ClassSelector() {
 
       <DateTabs currentDate={new Date()} onSelect={handleDateSelect} />
       {!loading && (
-        <ScheduledClasses classes={filteredClasses} showFullBadge={!onlyShowFull} />
+        <ScheduledClasses classes={filteredClasses} />
       )}
       {loading && (
         <div className="flex items-center justify-center h-60">
