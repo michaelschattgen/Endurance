@@ -37,13 +37,13 @@ function App() {
               <Route path="/" element={<ClassSelector />} />
             </Routes>
           </div>
-          <footer className="bg-gray-100 text-gray-800 ">
+          <footer className="text-gray-700 dark:text-gray-200 ">
             <div className="p-2 pl-4 flex font-extralight flex-row justify-between ">
               <div>
                 Built with <span className="text-red-500">❤️</span> by{" "}
                 <a
                   href="https://schattgen.nl"
-                  className="font-bold hover:border-b-2 hover:border-dotted border-gray-800"
+                  className="font-bold hover:border-b-2 border-dotted border-gray-800 dark:border-gray-400"
                 >
                   Michael Schättgen
                 </a>
