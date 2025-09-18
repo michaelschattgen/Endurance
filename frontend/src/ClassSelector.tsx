@@ -33,7 +33,7 @@ function ClassSelector() {
         setLoading(false);
       });
     setRefreshNeeded(false);
-  }, [venue, refreshNeeded]);
+  }, [venue, selectedDate, refreshNeeded]);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
@@ -61,7 +61,9 @@ function ClassSelector() {
   return (
     <>
       <div className="flex flex-col md:flex-row justify-between">
-        <h2 className="font-display text-xl font-extrabold text-gray-700 dark:text-white">Pick a day</h2>
+        <h2 className="font-display text-xl font-extrabold text-gray-700 dark:text-white">
+          Pick a day
+        </h2>
         <div className="flex items-center mt-4 md:mt-0">
           <Checkbox
             checked={hideSquash}
@@ -89,9 +91,7 @@ function ClassSelector() {
       </div>
 
       <DateTabs currentDate={new Date()} onSelect={handleDateSelect} />
-      {!loading && (
-        <ScheduledClasses classes={filteredClasses} />
-      )}
+      {!loading && <ScheduledClasses classes={filteredClasses} />}
       {loading && (
         <div className="flex items-center justify-center h-60">
           <Loader2 className="h-8 w-8 animate-spin" />

@@ -7,6 +7,8 @@ import { Label } from "./ui/label";
 import { ScheduledClass } from "@/types/ScheduledClass";
 import { toast } from "sonner";
 import { addClass } from "@/services/apiService";
+import { addPreviousClass, isClassInHistoryByRef, removePreviousClass } from "@/utils/storage";
+import { toRef } from "@/types/localStorage/PreviouslyChosenClass";
 
 interface ClassDetailsDialogProps {
   open: boolean;
@@ -23,10 +25,23 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
     const defaultEmail = localStorage.getItem("emailAddress");
     return defaultEmail ?? "";
   });
-  
+
   const [loading, setLoading] = useState(false);
 
   if (!classDetails) return null;
+
+  const isInHistory = isClassInHistoryByRef(toRef(classDetails));
+
+  const handleRemoveFromHistory = () => {
+    removePreviousClass(toRef(classDetails));
+    toast("Removed from history", {
+      description: classDetails.activity.name,
+    });
+
+    window.dispatchEvent(new CustomEvent("previous-classes:updated"));
+
+    onClose();
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -37,6 +52,15 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
       startDateTime: classDetails.startTime,
     };
 
+    if (email == null || email == "") {
+      toast.error("Failed to add watcher", {
+        description: "Please provide an email address.",
+      });
+
+      setLoading(false);
+      return;
+    }
+
     addClass(payload)
       .then(() => {
         setLoading(false);
@@ -45,12 +69,17 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
 
         localStorage.setItem("emailAddress", email);
 
+        const startISO = new Date(classDetails.startTime).toISOString();
+
+        addPreviousClass({
+          name: classDetails.activity.name,
+          startTime: startISO,
+        });
+
         toast("Added notification for class", {
           description: `${classDetails.activity.name} on ${new Date(
             classDetails.startTime
-          ).toDateString()} at ${new Date(
-            classDetails.startTime
-          ).toLocaleTimeString([], {
+          ).toDateString()} at ${new Date(classDetails.startTime).toLocaleTimeString([], {
             timeStyle: "short",
           })}`,
         });
@@ -68,8 +97,8 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
           <div className="text-left flex-1">
             <h2 className="text-lg font-bold">Get notified for this class</h2>
             <p className="text-sm text-muted-foreground dark:text-zinc-400 ">
-              Enter your email address below to get notified whenever there's a
-              spot available in this class.
+              Enter your email address below to get notified whenever there's a spot available in
+              this class.
             </p>
           </div>
         </DialogHeader>
@@ -90,11 +119,7 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
                 {new Date(classDetails.startTime).toLocaleTimeString([], {
                   timeStyle: "short",
                 })}{" "}
-                -{" "}
-                {calculateEndTime(
-                  classDetails.startTime,
-                  classDetails.durationSeconds
-                )}
+                - {calculateEndTime(classDetails.startTime, classDetails.durationSeconds)}
               </dd>
             </div>
             <div className="flex items-center justify-between">
@@ -117,51 +142,65 @@ export const ClassDetailsDialog: React.FC<ClassDetailsDialogProps> = ({
             tabIndex={-1}
             autoComplete="email"
             disabled={loading}
-            onChange={(e: {
-              target: { value: React.SetStateAction<string> };
-            }) => setEmail(e.target.value)}
+            required
+            onChange={(e: { target: { value: React.SetStateAction<string> } }) =>
+              setEmail(e.target.value)
+            }
           />
         </div>
-        <DialogFooter className="mt-4 flex justify-end md:space-x-2">
-          <Button
-            onClick={onClose}
-            className={`mt-2 ${buttonVariants({ variant: "ghost" })} dark:bg-transparent dark:text-white`}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={loading}
-            className={`mt-2 ${buttonVariants({ variant: "default" })} dark:bg-zinc-800 dark:text-zinc-50`}
-          >
-            {loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Save
-              </>
-            ) : (
-              "Save"
+        <DialogFooter className="mt-4">
+          <div className="flex w-full flex-col md:flex-row gap-2 items-stretch md:items-center">
+            {isInHistory && (
+              <Button onClick={handleRemoveFromHistory} className="text-red-500" variant={"ghost"}>
+                Remove from history
+              </Button>
             )}
-          </Button>
+
+            <Button
+              onClick={onClose}
+              className={`order-2 md:order-1 md:ml-auto ${buttonVariants({
+                variant: "ghost",
+              })} dark:bg-transparent dark:text-white`}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              onClick={handleSave}
+              disabled={loading}
+              className={`order-1 md:order-1  ${buttonVariants({
+                variant: "default",
+              })} dark:bg-zinc-800 dark:text-zinc-50`}
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Save
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
