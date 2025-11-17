@@ -27,19 +27,20 @@ builder.Configuration.GetSection("Settings").Bind(settings);
 // Register settings as a singleton so it can be injected wherever needed
 builder.Services.AddSingleton(settings.ConnectionStrings);
 builder.Services.AddSingleton(settings.Smtp);
+builder.Services.AddSingleton<IAppVersionProvider>(_ => new AppVersionProvider(initialVersion: "6.17.0"));
 
-builder.Services.AddCors(opt =>  opt.AddPolicy("CorsPolicy", c =>
-{ 
+builder.Services.AddCors(opt => opt.AddPolicy("CorsPolicy", c =>
+{
     c.AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyMethod();
 }));
 
+builder.Services.AddTransient<CustomHeadersHandler>();
 
 builder.Services.AddRefitClient<IElectrolyteClient>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://electrolyte.sportcity.nl/v1"))
-    .AddHttpMessageHandler((serviceProvider) =>
-        new CustomHeadersHandler(serviceProvider));
+    .AddHttpMessageHandler<CustomHeadersHandler>();
 
 builder.Services.AddDbContext<EnduranceDbContext>(options =>
     options.UseMySql(settings.ConnectionStrings.MySql, ServerVersion.AutoDetect(settings.ConnectionStrings.MySql),
@@ -87,7 +88,7 @@ app.MapGet("/get-venues", async (IElectrolyteClient electrolyteClient) =>
     .WithName("GetVenues")
     .WithOpenApi();
 
-app.MapGet("/get-classes", async([FromQuery] string venueId, [FromQuery] DateTime startDate, IElectrolyteClient electrolyteClient) =>
+app.MapGet("/get-classes", async ([FromQuery] string venueId, [FromQuery] DateTime startDate, IElectrolyteClient electrolyteClient) =>
     {
         try
         {
@@ -111,7 +112,7 @@ app.MapGet("/get-classes", async([FromQuery] string venueId, [FromQuery] DateTim
                 ClassTypeIcon = x.ClassTypeIcon,
                 Activity = x.Activity
             });
-            
+
             return Results.Ok(classes);
         }
         catch (Exception ex)
