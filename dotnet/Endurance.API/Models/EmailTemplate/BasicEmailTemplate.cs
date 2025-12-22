@@ -123,7 +123,7 @@ public static class BasicEmailTemplate
                     <tbody>
                       <tr>
                         <td class=""label"" align=""left"" style=""font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top;"" valign=""top"">
-                          Activity:
+                          Activity
                         </td>
                         <td class=""value"" align=""left"" style=""font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top;"" valign=""top"">
                           {ActivityName}
@@ -131,7 +131,7 @@ public static class BasicEmailTemplate
                       </tr>
                       <tr>
                         <td class=""label"" align=""left"" style=""font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top;"" valign=""top"">
-                          Day:
+                          Day
                         </td>
                         <td class=""value"" align=""left"" style=""font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top;"" valign=""top"">
                           {Day} at {Time}
@@ -139,7 +139,7 @@ public static class BasicEmailTemplate
                       </tr>
                       <tr>
                         <td class=""label"" align=""left"" style=""font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top;"" valign=""top"">
-                          Venue:
+                          Venue
                         </td>
                         <td class=""value"" align=""left"" style=""font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top;"" valign=""top"">
                           {Venue}
