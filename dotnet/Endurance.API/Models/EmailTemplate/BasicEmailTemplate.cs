@@ -80,8 +80,15 @@ public static class BasicEmailTemplate
     text-decoration: none !important;
   }
 
+        .details-table td {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
         .label {
             font-weight: bold;
+        }
+        .value {
+            text-align: right;
         }
 
   #MessageViewBody a {
@@ -112,7 +119,7 @@ public static class BasicEmailTemplate
 <h2>Endurance</h2>
                   <p style=""font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;"">Hi there,</p>
                   <p style=""font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;"">You're receiving this email because you've subscribed to get notifications for a class at SportCity. We want to let you know that there's a spot available for the following class: </p>
-                  <table role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" style=""border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; box-sizing: border-box; width: 100%; min-width: 100%;"" width=""100%"">
+                  <table class=""details-table"" role=""presentation"" border=""0"" cellpadding=""0"" cellspacing=""0"" style=""border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; box-sizing: border-box; width: 100%; min-width: 100%;"" width=""100%"">
                     <tbody>
                       <tr>
                         <td class=""label"" align=""left"" style=""font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top;"" valign=""top"">
