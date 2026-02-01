@@ -3,17 +3,16 @@ using Endurance.API.BackgroundServices;
 using Endurance.API.Clients;
 using Endurance.API.Interfaces;
 using Endurance.API.Interfaces.Repositories;
-using Endurance.API.Models;
 using Endurance.API.Models.Settings;
 using Endurance.API.Repositories;
 using Endurance.API.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
 string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddControllers();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -27,7 +26,7 @@ builder.Configuration.GetSection("Settings").Bind(settings);
 // Register settings as a singleton so it can be injected wherever needed
 builder.Services.AddSingleton(settings.ConnectionStrings);
 builder.Services.AddSingleton(settings.Smtp);
-builder.Services.AddSingleton<IAppVersionProvider>(_ => new AppVersionProvider(initialVersion: "6.17.0"));
+builder.Services.AddSingleton<IAppVersionProvider>(_ => new AppVersionProvider(initialVersion: "6.19.0"));
 
 builder.Services.AddCors(opt => opt.AddPolicy("CorsPolicy", c =>
 {
@@ -41,6 +40,9 @@ builder.Services.AddTransient<CustomHeadersHandler>();
 builder.Services.AddRefitClient<IElectrolyteClient>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://electrolyte.sportcity.nl/v1"))
     .AddHttpMessageHandler<CustomHeadersHandler>();
+
+builder.Services.AddRefitClient<IMyFitAppClient>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://reserveer.clubpellikaan.nl"));
 
 builder.Services.AddDbContext<EnduranceDbContext>(options =>
     options.UseMySql(settings.ConnectionStrings.MySql, ServerVersion.AutoDetect(settings.ConnectionStrings.MySql),
@@ -58,6 +60,8 @@ builder.Services.AddScoped<IWatchedClassService, WatchedClassService>();
 builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<INotifyService, NotifyService>();
+builder.Services.AddTransient<IMyFitAppService, MyFitAppService>();
+
 builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddHostedService<ClassWatcher>();
@@ -70,73 +74,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+if (!app.Environment.IsProduction())
+{
+    using var scope = app.Services.CreateScope();
+    var ctx = scope.ServiceProvider.GetService<EnduranceDbContext>();
+    ctx?.Database.Migrate();
+}
+
+app.MapControllers();
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
-
-app.MapGet("/get-venues", async (IElectrolyteClient electrolyteClient) =>
-    {
-        try
-        {
-            var response = await electrolyteClient.GetVenues();
-            return Results.Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
-    })
-    .WithName("GetVenues")
-    .WithOpenApi();
-
-app.MapGet("/get-classes", async ([FromQuery] string venueId, [FromQuery] DateTime startDate, IElectrolyteClient electrolyteClient) =>
-    {
-        try
-        {
-            var formattedStartDate = startDate.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
-            var response = await electrolyteClient.GetScheduledClasses(
-                venueId,
-                false,
-                formattedStartDate,
-                "all"
-            );
-
-            var classes = response.ScheduledClasses.Select(x => new ScheduledClassModel()
-            {
-                Id = x.Id,
-                VenueId = x.VenueId,
-                Description = x.Activity.Description,
-                DurationSeconds = x.DurationSeconds,
-                SpotsAvailable = x.SpotsAvailable,
-                Capacity = x.Capacity,
-                StartTime = x.StartTime,
-                ClassTypeIcon = x.ClassTypeIcon,
-                Activity = x.Activity
-            });
-
-            return Results.Ok(classes);
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
-    })
-    .WithName("GetClasses")
-    .WithOpenApi();
-
-app.MapPost("/add-classes", async (AddWatchedClassRequest addWatchedClassRequest, IWatchedClassService watchedClassService) =>
-    {
-        try
-        {
-            await watchedClassService.AddEmailWatcher(addWatchedClassRequest.VenueId, addWatchedClassRequest.ClassId,
-                addWatchedClassRequest.EmailAddress, addWatchedClassRequest.StartDateTime);
-            return Results.Ok();
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
-    })
-    .WithName("AddClass")
-    .WithOpenApi();
 
 app.Run();

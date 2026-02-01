@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Endurance.API.Models.Electrolyte;
+namespace Endurance.API.Models;
 
 public class Venue
 {
