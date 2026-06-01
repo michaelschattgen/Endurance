@@ -27,7 +27,7 @@ builder.Configuration.GetSection("Settings").Bind(settings);
 // Register settings as a singleton so it can be injected wherever needed
 builder.Services.AddSingleton(settings.ConnectionStrings);
 builder.Services.AddSingleton(settings.Smtp);
-builder.Services.AddSingleton<IAppVersionProvider>(_ => new AppVersionProvider(initialVersion: "6.22.0"));
+builder.Services.AddSingleton<IAppVersionProvider>(_ => new AppVersionProvider(initialVersion: "6.25.0"));
 
 builder.Services.AddCors(opt => opt.AddPolicy("CorsPolicy", c =>
 {
