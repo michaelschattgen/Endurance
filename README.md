@@ -6,9 +6,17 @@ A live version of this project can be found at: [https://endurance.schattgen.dev
 
 ## Screenshots
 
-![Venue picker](screenshots/1.png)
-![Class picker](screenshots/2.png)
-![Set notifier](screenshots/3.png)
+![Venue picker](media/1.png)
+![Class picker](media/2.png)
+![Set notifier](media/3.png)
+
+## Raycast / Vicinae support
+
+This repository also contains a working extension for Raycast or Vicinae which allows you to set up a notification for a class from within your launcher. Because why not.
+
+<div align="center">
+<video center src="media/launcher-support.mp4" width="700" controls></video>
+</div>
 
 ## Project Structure
 
@@ -59,7 +67,6 @@ The project is divided into two main parts:
    ```
 
 2. **Backend Setup**
-
    - Navigate to the backend directory:
      ```
      cd dotnet
