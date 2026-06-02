@@ -15,7 +15,7 @@ A live version of this project can be found at: [https://endurance.schattgen.dev
 This repository also contains a working extension for Raycast or Vicinae which allows you to set up a notification for a class from within your launcher. Because why not.
 
 <div align="center">
-<video center src="media/launcher-support.mp4" width="700" controls></video>
+<video center src="https://github.com/user-attachments/assets/625d44b3-fcd6-4285-9a57-8b7f2341700a" width="600" controls></video>
 </div>
 
 ## Project Structure
