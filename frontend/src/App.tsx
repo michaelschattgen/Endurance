@@ -21,6 +21,7 @@ function App() {
                 navigate("/select-venue");
               }}
             >
+              <img className="w-14" src="/icon.png"></img>
               <h1 className="font-display font-extrabold text-gray-700 dark:text-gray-200 text-3xl">
                 Endurance
               </h1>
