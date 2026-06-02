@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { ActionPanel, Action, Form, Icon, showToast, Toast, LocalStorage, useNavigation } from "@raycast/api";
+import { ActionPanel, Action, Form, Icon, showToast, Toast, useNavigation } from "@raycast/api";
 import { addWatchedClass } from "../api";
 import { ScheduledClass } from "../types";
-import { formatTime, formatDuration, formatDateLong } from "../utils/dates";
-import { STORAGE_KEYS } from "../constants";
+import { getSavedEmailAddress, setSavedEmailAddress } from "../storage";
+import { getErrorMessage } from "../utils/errors";
+import WatchClassSummary from "./WatchClassSummary";
 
 interface WatchClassFormProps {
   cls: ScheduledClass;
@@ -15,13 +16,15 @@ export default function WatchClassForm({ cls, venueName }: WatchClassFormProps) 
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    LocalStorage.getItem<string>(STORAGE_KEYS.EMAIL_ADDRESS).then((saved) => {
+    getSavedEmailAddress().then((saved) => {
       if (saved) setEmail(saved);
     });
   }, []);
 
   async function handleSubmit() {
-    if (!email.trim()) {
+    const normalizedEmail = email.trim();
+
+    if (!normalizedEmail) {
       await showToast({ style: Toast.Style.Failure, title: "Email is required" });
       return;
     }
@@ -30,37 +33,35 @@ export default function WatchClassForm({ cls, venueName }: WatchClassFormProps) 
       await addWatchedClass({
         venueId: cls.venueId,
         classId: cls.id,
-        emailAddress: email.trim(),
+        emailAddress: normalizedEmail,
         startDateTime: cls.startTime,
       });
-      await LocalStorage.setItem(STORAGE_KEYS.EMAIL_ADDRESS, email.trim());
+      await setSavedEmailAddress(normalizedEmail);
       await showToast({ style: Toast.Style.Success, title: "Now watching this class!" });
       pop();
-    } catch (e) {
+    } catch (error: unknown) {
       await showToast({
         style: Toast.Style.Failure,
         title: "Failed to watch class",
-        message: e instanceof Error ? e.message : "Unknown error",
+        message: getErrorMessage(error),
       });
     }
   }
-
-  const timeRange = `${formatTime(cls.startTime)} (${formatDuration(cls.durationSeconds)})`;
 
   return (
     <Form
       actions={
         <ActionPanel>
-          <Action.SubmitForm title="Watch Class" icon={Icon.Bell} onSubmit={handleSubmit} />
+          <Action.SubmitForm
+            title="Watch Class"
+            icon={Icon.Bell}
+            shortcut={{ modifiers: [], key: "return" }}
+            onSubmit={handleSubmit}
+          />
         </ActionPanel>
       }
     >
-      <Form.Description title="Activity" text={cls.activity.name} />
-      <Form.Description title="Date" text={formatDateLong(cls.startTime)} />
-      <Form.Description title="Time" text={timeRange} />
-      <Form.Description title="Venue" text={venueName} />
-      <Form.Description title="Spots" text={`${cls.spotsAvailable} / ${cls.capacity} available`} />
-      <Form.Separator />
+      <WatchClassSummary cls={cls} venueName={venueName} />
       <Form.TextField
         id="email"
         title="Email"

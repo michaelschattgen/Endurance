@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { List, ActionPanel, Action, Icon, Color, LocalStorage } from "@raycast/api";
+import { List } from "@raycast/api";
 import { getClasses } from "../api";
-import { ScheduledClass } from "../types";
-import { Venue } from "../types";
-import { formatTime, formatDuration, dateLabel, toDateString, dateOptions } from "../utils/dates";
+import { ScheduledClass, Venue } from "../types";
 import { STORAGE_KEYS } from "../constants";
-import WatchClassForm from "../components/WatchClassForm";
 import VenuePicker from "../components/VenuePicker";
 import DatePicker from "../components/DatePicker";
+import ClassList from "../components/ClassList";
+import { getDefaultVenue, setLastSelectedDate } from "../storage";
 
 type ViewState = "loading" | "pick-venue" | "pick-date" | "show-classes";
 
@@ -44,12 +43,10 @@ export default function BrowseClassesView() {
   }, [venueAndDate, refreshKey]);
 
   useEffect(() => {
-    LocalStorage.getItem<string>(STORAGE_KEYS.DEFAULT_VENUE_ID).then((id) => {
-      if (id) {
-        setVenueId(id);
-        LocalStorage.getItem<string>(STORAGE_KEYS.DEFAULT_VENUE_NAME).then((name) => {
-          setVenueName(name ?? "");
-        });
+    getDefaultVenue().then((venue) => {
+      if (venue) {
+        setVenueId(venue.id);
+        setVenueName(venue.name);
         setViewState("pick-date");
       } else {
         setViewState("pick-venue");
@@ -73,7 +70,7 @@ export default function BrowseClassesView() {
   async function handleDateSelected(date: string) {
     const wasPickingDate = viewState === "pick-date";
     setSelectedDate(date);
-    await LocalStorage.setItem(STORAGE_KEYS.LAST_SELECTED_DATE, date);
+    await setLastSelectedDate(date);
     setViewState("show-classes");
     if (wasPickingDate) {
       setClassesListKey((k) => k + 1);
@@ -92,109 +89,21 @@ export default function BrowseClassesView() {
     return <DatePicker onDateSelected={handleDateSelected} />;
   }
 
-  const filteredClasses = classes
-    .slice()
-    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
-    .filter((cls) => {
-      if (onlyShowFull && cls.spotsAvailable !== 0) return false;
-      if (hideSquash && cls.activity.id === "squash") return false;
-      return true;
-    });
-
-  const parsedDate = new Date(selectedDate + "T00:00:00");
-
   return (
-    <List
+    <ClassList
+      classes={classes}
+      error={error}
       isLoading={isLoading}
-      key={classesListKey}
-      searchBarPlaceholder="Search classes..."
-      searchBarAccessory={
-        <List.Dropdown tooltip="Select date" value={selectedDate} onChange={handleDateSelected}>
-          {dateOptions().map((opt) => (
-            <List.Dropdown.Item key={opt.value} value={opt.value} title={opt.title} />
-          ))}
-        </List.Dropdown>
-      }
-      navigationTitle={`${venueName} — ${dateLabel(parsedDate)}`}
-    >
-      {error ? (
-        <List.EmptyView icon={Icon.Warning} title="Failed to load classes" description={error} />
-      ) : filteredClasses.length === 0 && !isLoading ? (
-        <List.EmptyView
-          icon={Icon.Calendar}
-          title="No classes"
-          description="Try a different date, venue, or check your filters"
-        />
-      ) : (
-        filteredClasses.map((cls) => {
-          const isFull = cls.spotsAvailable === 0;
-          const timeStr = formatTime(cls.startTime);
-          const durStr = formatDuration(cls.durationSeconds);
-          return (
-            <List.Item
-              key={cls.id}
-              icon={cls.classTypeIcon || (isFull ? Icon.CircleFilled : Icon.Circle)}
-              title={cls.activity.name}
-              subtitle={`${timeStr} · ${durStr}`}
-              accessories={[
-                {
-                  text: `${cls.spotsAvailable}/${cls.capacity}`,
-                  icon: {
-                    source: isFull ? Icon.CircleFilled : Icon.Circle,
-                    tintColor: isFull ? Color.Red : Color.Green,
-                  },
-                },
-              ]}
-              actions={
-                <ActionPanel>
-                  <Action.Push
-                    title="Watch Class"
-                    icon={Icon.Bell}
-                    shortcut={{ modifiers: ["cmd"], key: "return" }}
-                    target={<WatchClassForm cls={cls} venueName={venueName} />}
-                  />
-                  <Action
-                    title="Refresh"
-                    icon={Icon.ArrowClockwise}
-                    shortcut={{ modifiers: ["cmd"], key: "r" }}
-                    onAction={() => setRefreshKey((k) => k + 1)}
-                  />
-                  <Action.Push
-                    title="Change Venue"
-                    icon={Icon.Geopin}
-                    shortcut={{ modifiers: ["cmd"], key: "v" }}
-                    target={
-                      <VenuePicker
-                        onVenueSelected={(v) => {
-                          setVenueId(v.id);
-                          setVenueName(v.name);
-                        }}
-                      />
-                    }
-                  />
-                  <Action
-                    title={onlyShowFull ? "Show All Classes" : "Only Full Classes"}
-                    icon={onlyShowFull ? Icon.Eye : Icon.Filter}
-                    shortcut={{ modifiers: ["cmd", "shift"], key: "f" }}
-                    onAction={() => setOnlyShowFull((prev) => !prev)}
-                  />
-                  <Action
-                    title={hideSquash ? "Show Squash" : "Hide Squash"}
-                    icon={hideSquash ? Icon.Eye : Icon.Xmark}
-                    shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
-                    onAction={() => setHideSquash((prev) => !prev)}
-                  />
-                  <Action.CopyToClipboard
-                    title="Copy Class Name"
-                    content={cls.activity.name}
-                    shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
-                  />
-                </ActionPanel>
-              }
-            />
-          );
-        })
-      )}
-    </List>
+      selectedDate={selectedDate}
+      venueName={venueName}
+      onlyShowFull={onlyShowFull}
+      hideSquash={hideSquash}
+      listKey={classesListKey}
+      onDateSelected={handleDateSelected}
+      onRefresh={() => setRefreshKey((key) => key + 1)}
+      onVenueSelected={handleVenueSelected}
+      onToggleOnlyShowFull={() => setOnlyShowFull((value) => !value)}
+      onToggleHideSquash={() => setHideSquash((value) => !value)}
+    />
   );
 }

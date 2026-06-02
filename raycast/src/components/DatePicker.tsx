@@ -1,5 +1,5 @@
 import { List, ActionPanel, Action, Icon } from "@raycast/api";
-import { dateOptions, dateLabel, toDateString } from "../utils/dates";
+import { dateOptions, toDateString } from "../utils/dates";
 
 interface DatePickerProps {
   onDateSelected: (date: string) => void;
@@ -11,7 +11,6 @@ export default function DatePicker({ onDateSelected }: DatePickerProps) {
   const options = dateOptions();
 
   const todayIndex = options.findIndex((o) => o.value === today);
-  const jumpTo = todayIndex >= 0 ? todayIndex * 50 : 0;
 
   return (
     <List navigationTitle="Select a date" searchBarPlaceholder="Search dates...">

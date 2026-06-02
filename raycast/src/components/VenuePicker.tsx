@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { List, ActionPanel, Action, Icon, showToast, Toast, LocalStorage, useNavigation } from "@raycast/api";
+import { List, ActionPanel, Action, Icon, showToast, Toast, useNavigation } from "@raycast/api";
 import { getVenues } from "../api";
 import { Venue } from "../types";
-import { STORAGE_KEYS } from "../constants";
+import { setDefaultVenue } from "../storage";
+import { getErrorMessage } from "../utils/errors";
 
 interface VenuePickerProps {
   onVenueSelected?: (venue: Venue) => void;
@@ -17,15 +18,14 @@ export default function VenuePicker({ onVenueSelected, shouldPop = true }: Venue
   useEffect(() => {
     getVenues()
       .then(setVenues)
-      .catch((e: Error) =>
-        showToast({ style: Toast.Style.Failure, title: "Failed to load venues", message: e.message })
+      .catch((error: unknown) =>
+        showToast({ style: Toast.Style.Failure, title: "Failed to load venues", message: getErrorMessage(error) })
       )
       .finally(() => setIsLoading(false));
   }, []);
 
   async function selectVenue(venue: Venue) {
-    await LocalStorage.setItem(STORAGE_KEYS.DEFAULT_VENUE_ID, venue.id);
-    await LocalStorage.setItem(STORAGE_KEYS.DEFAULT_VENUE_NAME, venue.name);
+    await setDefaultVenue(venue);
     await showToast({ style: Toast.Style.Success, title: `Default venue: ${venue.name}` });
     onVenueSelected?.(venue);
     if (shouldPop) pop();
