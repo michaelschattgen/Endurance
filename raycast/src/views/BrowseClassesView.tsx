@@ -67,10 +67,10 @@ export default function BrowseClassesView() {
     setViewState("pick-date");
   }
 
-  async function handleDateSelected(date: string) {
+  function handleDateSelected(date: string) {
     const wasPickingDate = viewState === "pick-date";
     setSelectedDate(date);
-    await setLastSelectedDate(date);
+    setLastSelectedDate(date);
     setViewState("show-classes");
     if (wasPickingDate) {
       setClassesListKey((k) => k + 1);

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Icon, List } from "@raycast/api";
 import ClassListItem from "./ClassListItem";
 import { ScheduledClass, Venue } from "../types";
@@ -45,6 +46,7 @@ export default function ClassList({
   onToggleOnlyShowFull,
   onToggleHideSquash,
 }: ClassListProps) {
+  const [searchText, setSearchText] = useState("");
   const visibleClasses = getVisibleClasses(classes, onlyShowFull, hideSquash);
   const parsedDate = new Date(`${selectedDate}T00:00:00`);
 
@@ -52,9 +54,11 @@ export default function ClassList({
     <List
       isLoading={isLoading}
       key={listKey}
+      searchText={searchText}
+      onSearchTextChange={setSearchText}
       searchBarPlaceholder="Search classes..."
       searchBarAccessory={
-        <List.Dropdown tooltip="Select date" value={selectedDate} onChange={onDateSelected}>
+        <List.Dropdown tooltip="Select date" defaultValue={selectedDate} onChange={onDateSelected}>
           {dateOptions().map((opt) => (
             <List.Dropdown.Item key={opt.value} value={opt.value} title={opt.title} />
           ))}
