@@ -18,14 +18,10 @@ declare type Preferences = ExtensionPreferences
 declare namespace Preferences {
   /** Preferences accessible in the `browse-classes` command */
   export type BrowseClasses = ExtensionPreferences & {}
-  /** Preferences accessible in the `set-default-venue` command */
-  export type SetDefaultVenue = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
   /** Arguments passed to the `browse-classes` command */
   export type BrowseClasses = {}
-  /** Arguments passed to the `set-default-venue` command */
-  export type SetDefaultVenue = {}
 }
 

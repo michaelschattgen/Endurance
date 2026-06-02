@@ -4,19 +4,16 @@
   "description": "Monitor SportCity class availability and get notified when spots open up",
   "icon": "icon.png",
   "author": "user",
-  "categories": ["Productivity", "Health"],
+  "categories": [
+    "Productivity",
+    "Health"
+  ],
   "license": "MIT",
   "commands": [
     {
       "name": "browse-classes",
       "title": "Browse Classes",
       "description": "Browse classes at your default venue",
-      "mode": "view"
-    },
-    {
-      "name": "set-default-venue",
-      "title": "Set Default Venue",
-      "description": "Choose your default SportCity venue",
       "mode": "view"
     }
   ],

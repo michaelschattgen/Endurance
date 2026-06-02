@@ -6,9 +6,10 @@ import { STORAGE_KEYS } from "../constants";
 
 interface VenuePickerProps {
   onVenueSelected?: (venue: Venue) => void;
+  shouldPop?: boolean;
 }
 
-export default function VenuePicker({ onVenueSelected }: VenuePickerProps) {
+export default function VenuePicker({ onVenueSelected, shouldPop = true }: VenuePickerProps) {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { pop } = useNavigation();
@@ -27,7 +28,7 @@ export default function VenuePicker({ onVenueSelected }: VenuePickerProps) {
     await LocalStorage.setItem(STORAGE_KEYS.DEFAULT_VENUE_NAME, venue.name);
     await showToast({ style: Toast.Style.Success, title: `Default venue: ${venue.name}` });
     onVenueSelected?.(venue);
-    pop();
+    if (shouldPop) pop();
   }
 
   return (

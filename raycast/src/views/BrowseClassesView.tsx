@@ -6,7 +6,6 @@ import { formatTime, formatDuration, dateLabel, toDateString, dateOptions } from
 import { STORAGE_KEYS } from "../constants";
 import WatchClassForm from "../components/WatchClassForm";
 import VenuePicker from "../components/VenuePicker";
-import OnboardingView from "../components/OnboardingView";
 
 export default function BrowseClassesView() {
   const [classes, setClasses] = useState<ScheduledClass[]>([]);
@@ -44,8 +43,9 @@ export default function BrowseClassesView() {
         LocalStorage.getItem<string>(STORAGE_KEYS.DEFAULT_VENUE_NAME).then((name) => {
           setVenueName(name ?? "");
         });
+      } else {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
   }, []);
 
@@ -57,8 +57,11 @@ export default function BrowseClassesView() {
   }, [venueAndDate, refreshKey]);
 
   if (!venueId) {
-    return (
-      <OnboardingView
+    return isLoading ? (
+      <List isLoading={true} />
+    ) : (
+      <VenuePicker
+        shouldPop={false}
         onVenueSelected={(v) => {
           setVenueId(v.id);
           setVenueName(v.name);
@@ -120,7 +123,7 @@ export default function BrowseClassesView() {
                   <Action.Push
                     title="Watch Class"
                     icon={Icon.Bell}
-                    shortcut={{ modifiers: ["cmd"], key: "w" }}
+                    shortcut={{ modifiers: ["cmd"], key: "return" }}
                     target={<WatchClassForm cls={cls} venueName={venueName} />}
                   />
                   <Action
@@ -157,7 +160,7 @@ export default function BrowseClassesView() {
                   <Action.CopyToClipboard
                     title="Copy Class Name"
                     content={cls.activity.name}
-                    shortcut={{ modifiers: ["cmd"], key: "c" }}
+                    shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
                   />
                 </ActionPanel>
               }
