@@ -22,6 +22,7 @@ export default function BrowseClassesView() {
   const [onlyShowFull, setOnlyShowFull] = useState(true);
   const [hideSquash, setHideSquash] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [classesListKey, setClassesListKey] = useState(0);
 
   const [viewState, setViewState] = useState<ViewState>("loading");
 
@@ -70,9 +71,13 @@ export default function BrowseClassesView() {
   }
 
   async function handleDateSelected(date: string) {
+    const wasPickingDate = viewState === "pick-date";
     setSelectedDate(date);
     await LocalStorage.setItem(STORAGE_KEYS.LAST_SELECTED_DATE, date);
     setViewState("show-classes");
+    if (wasPickingDate) {
+      setClassesListKey((k) => k + 1);
+    }
   }
 
   if (viewState === "loading") {
@@ -101,6 +106,7 @@ export default function BrowseClassesView() {
   return (
     <List
       isLoading={isLoading}
+      key={classesListKey}
       searchBarPlaceholder="Search classes..."
       searchBarAccessory={
         <List.Dropdown tooltip="Select date" value={selectedDate} onChange={handleDateSelected}>

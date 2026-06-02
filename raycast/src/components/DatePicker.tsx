@@ -14,7 +14,7 @@ export default function DatePicker({ onDateSelected }: DatePickerProps) {
   const jumpTo = todayIndex >= 0 ? todayIndex * 50 : 0;
 
   return (
-    <List navigationTitle="Select a date" searchBarPlaceholder="Search dates..." enableFiltering={false}>
+    <List navigationTitle="Select a date" searchBarPlaceholder="Search dates...">
       <List.EmptyView icon={Icon.Calendar} title="Pick a date above" />
       {options.map((opt, i) => (
         <List.Item

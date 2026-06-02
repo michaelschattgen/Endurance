@@ -27,7 +27,9 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     const text = await response.text().catch(() => "Unknown error");
     throw new Error(`API Error ${response.status}: ${text}`);
   }
-  return response.json() as Promise<T>;
+  const text = await response.text();
+  if (!text) return undefined as T;
+  return JSON.parse(text) as T;
 }
 
 export function getVenues(): Promise<Venue[]> {
