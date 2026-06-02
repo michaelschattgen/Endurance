@@ -1,0 +1,43 @@
+{
+  "name": "endurance",
+  "title": "Endurance",
+  "description": "Monitor SportCity class availability and get notified when spots open up",
+  "icon": "icon.png",
+  "author": "user",
+  "categories": [
+    "Other"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "browse-classes",
+      "title": "Browse Classes",
+      "description": "Browse classes at your default venue",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "apiBaseUrl",
+      "title": "API Base URL",
+      "description": "Base URL of the Endurance API (e.g. http://localhost:8081)",
+      "type": "textfield",
+      "required": true,
+      "placeholder": "http://localhost:8081"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.60.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "@vicinae/api": "^0.21.5",
+    "typescript": "^5.3.0"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "lint": "ray lint"
+  }
+}
