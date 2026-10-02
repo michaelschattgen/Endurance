@@ -87,6 +87,11 @@ public class ClassWatcher : BackgroundService
                     await Task.Delay(TimeSpan.FromMinutes(RETRY_INTERVAL_MINUTES), stoppingToken);
                 }
             }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                // The host is shutting down, which cancels the delays above. Not an error.
+                break;
+            }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error refreshing scheduled classes");

@@ -1,0 +1,51 @@
+# Used only by the optional `tls` profile, which is enabled with COMPOSE_PROFILES=tls
+# in .env (or --profile tls on each command).
+#
+# Caddy obtains and renews a Let's Encrypt certificate for ENDURANCE_DOMAIN on its
+# own, provided ports 80 and 443 are reachable from the internet and the domain's
+# DNS A/AAAA record points at this host.
+#
+# ENDURANCE_DOMAIN may also be a LAN IP address, such as 192.168.1.10, for HTTPS on a
+# private network. Caddy then issues the certificate from its own local authority, and
+# browsers show a warning until you trust that authority on the device.
+#
+# To change anything below, copy this file to Caddyfile.local and mount the copy instead,
+# as docs/SELF-HOSTING.md describes, so that `git pull` never conflicts with your edits.
+
+{
+	# Browsers send no server name when connecting to an IP address, and behind Docker's
+	# NAT Caddy cannot work out which address was meant, so it would fail the handshake.
+	# This names the certificate to use in that case. Clients connecting by domain name
+	# always send one, so it changes nothing for them.
+	default_sni {$ENDURANCE_DOMAIN}
+}
+
+{$ENDURANCE_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy web:80
+}
+
+# Common changes, for your Caddyfile.local:
+#
+# Require a login. Endurance has none of its own, so anyone with the address can set
+# watchers; to keep an instance to yourself, generate a password hash (it prompts, so
+# the password stays out of your shell history):
+#
+#	docker run --rm -it caddy:2-alpine caddy hash-password
+#
+# and add this inside the site block, with your own username and that hash. Browsers
+# prompt for it once; the Raycast extension cannot send a login, so it stops working.
+#
+#	basic_auth {
+#		you $2a$14$...the-hash-you-generated...
+#	}
+#
+# Use a self-signed certificate for a domain that only resolves on your own network,
+# which Let's Encrypt cannot validate. Add this inside the site block:
+#
+#	tls internal
+#
+# Receive certificate expiry warnings. Add this inside the global options block at the
+# top:
+#
+#	email you@example.com

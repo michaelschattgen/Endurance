@@ -1,0 +1,113 @@
+name: endurance
+
+# Docker's default log driver grows without bound; every service reuses this cap.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env - copy .env.example if you have no .env yet}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env - copy .env.example if you have no .env yet}
+      MYSQL_DATABASE: endurancedatabase
+      MYSQL_USER: ${MYSQL_USER:-endurance}
+      # Root only from inside this container; the API has its own account.
+      MYSQL_ROOT_HOST: localhost
+    volumes:
+      - db-data:/var/lib/mysql
+      # Applied once, when the data volume is first created.
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      # TCP, because during first-run initialisation MySQL listens on its socket only.
+      # No credentials: ping succeeds whenever the server answers, and a -p password
+      # would be visible in the host's process list.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    # Uncomment to reach the database from the host, as the endurance user.
+    # ports:
+    #   - "127.0.0.1:3306:3306"
+
+  api:
+    build:
+      context: ./dotnet
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      # No TZ here or on db, deliberately: the application compares start times with
+      # both DateTime.UtcNow and MySQL's clock, which only agree when everything is UTC.
+      # Links in emails point here, so it must be the address people actually use.
+      Settings__FrontendBaseUrl: ${ENDURANCE_PUBLIC_URL:-http://localhost:${ENDURANCE_PORT:-8088}}
+      Settings__ConnectionStrings__MySql: "Server=db;Port=3306;Database=endurancedatabase;User Id=${MYSQL_USER:-endurance};Password=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env - copy .env.example if you have no .env yet};"
+      Settings__Smtp__Server: ${SMTP_SERVER:?Set SMTP_SERVER in .env - copy .env.example if you have no .env yet}
+      Settings__Smtp__Port: ${SMTP_PORT:-587}
+      Settings__Smtp__From: ${SMTP_FROM:?Set SMTP_FROM in .env - copy .env.example if you have no .env yet}
+      Settings__Smtp__Username: ${SMTP_USERNAME:-}
+      Settings__Smtp__Password: ${SMTP_PASSWORD:-}
+      Settings__Smtp__EnableSsl: ${SMTP_ENABLE_SSL:-true}
+    # Non-root on a high port, so it needs no capabilities.
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # Reached through web at /api. Uncomment to hit it directly, e.g. for Swagger with
+    # ASPNETCORE_ENVIRONMENT=Development.
+    # ports:
+    #   - "127.0.0.1:8081:8080"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASEURL: ${VITE_API_BASEURL:-/api}
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "${ENDURANCE_BIND_ADDRESS:-127.0.0.1}:${ENDURANCE_PORT:-8088}:80"
+    security_opt:
+      - no-new-privileges:true
+
+  # Optional HTTPS, enabled with COMPOSE_PROFILES=tls in .env. See docs/SELF-HOSTING.md.
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["tls"]
+    restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      web:
+        condition: service_started
+    environment:
+      # Defaults to localhost so the default, non-TLS `docker compose up` never breaks.
+      ENDURANCE_DOMAIN: ${ENDURANCE_DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  db-data:
+  caddy-data:
+  caddy-config:
