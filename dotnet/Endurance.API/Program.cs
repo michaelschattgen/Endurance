@@ -34,7 +34,7 @@ if (string.IsNullOrWhiteSpace(settings.FrontendBaseUrl))
 builder.Services.AddSingleton(settings.ConnectionStrings);
 builder.Services.AddSingleton(settings.Smtp);
 builder.Services.AddSingleton(settings);
-builder.Services.AddSingleton<IAppVersionProvider>(_ => new AppVersionProvider(initialVersion: "6.25.0"));
+builder.Services.AddSingleton<IAppVersionProvider>(_ => new AppVersionProvider(initialVersion: "6.34.0"));
 
 builder.Services.AddCors(opt => opt.AddPolicy("CorsPolicy", c =>
 {
