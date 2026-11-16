@@ -25,22 +25,24 @@ function App() {
         className={`flex justify-center min-h-screen bg-gray-100 dark:bg-zinc-950 font-geist py-0 md:py-2`}
       >
         <div className="w-full max-w-4xl">
-          <div className="p-2 pl-4 flex flex-row justify-between">
+          <div className="flex items-center gap-2 p-2 pl-4">
             <div
-              className="flex items-center gap-x-2 hover:cursor-pointer"
+              className="flex min-w-0 flex-1 items-center gap-x-2 hover:cursor-pointer"
               onClick={() => {
                 navigate("/select-venue");
               }}
             >
-              <img className="w-14" src="/icon.png"></img>
-              <h1 className="font-display font-extrabold text-gray-700 dark:text-gray-200 text-3xl">
+              <img className="w-14 shrink-0" src="/icon.png"></img>
+              <h1 className="hidden shrink-0 font-display text-3xl font-extrabold text-gray-700 dark:text-gray-200 md:block">
                 Endurance
               </h1>
 
               <VenueHeader />
             </div>
 
-            <DarkModeToggle />
+            <div className="shrink-0">
+              <DarkModeToggle />
+            </div>
           </div>
 
           <div className="p-5 sm:min-h-2/4 min-h-3/4 bg-white dark:bg-zinc-900 shadow-lg rounded-2xl mb-5">
