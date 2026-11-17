@@ -1,0 +1,9 @@
+# These are read verbatim by Linux containers - schema.sql is piped into MySQL on first
+# start and migrations by hand, Caddyfile is bind-mounted into Caddy, nginx.conf is
+# copied into the web image, and .env.example is what you copy to the .env that Compose
+# parses. Pin them to LF so a Windows checkout does not hand a container CRLF.
+# Everything else keeps whatever the clone decides.
+db/**/*.sql          text eol=lf
+Caddyfile            text eol=lf
+frontend/nginx.conf  text eol=lf
+.env.example         text eol=lf

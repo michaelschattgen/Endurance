@@ -25,14 +25,47 @@ The project is divided into two main parts:
 - **Backend**: Built with .NET, the backend serves as gateway for the SportCity API, a watcher for fully booked classes and sending the notifications.
 - **Frontend**: A website built with Vite, React, TypeScript and Shadcn. The frontend provides an interface to communicate with the backend, allowing the users to save watchers for their preferred classes at their venue.
 
-## Getting Started
+## Self-hosting
+
+Endurance runs as a self-contained Docker Compose stack — the API, the background class
+watcher, the web interface and the database. No images are published to a registry;
+compose builds them from this repository on your own machine. All you need is Docker
+with the Compose plugin.
+
+```bash
+git clone https://github.com/michaelschattgen/Endurance.git
+cd Endurance
+
+cp .env.example .env
+# Edit .env — the database passwords and the SMTP block need filling in.
+
+docker compose up -d
+```
+
+Then open [http://localhost:8088](http://localhost:8088).
+
+The port is bound to localhost by default, since Endurance has no login. Running it on
+a server? Set `ENDURANCE_BIND_ADDRESS=0.0.0.0` in `.env` and browse to that host's own
+address instead — and set `ENDURANCE_PUBLIC_URL` to that same address, since the
+verification and unsubscribe links in its emails point there.
+
+The frontend reaches the API through a relative `/api` path that nginx proxies, so you
+can serve it on any domain or port without rebuilding anything.
+
+**[docs/SELF-HOSTING.md](docs/SELF-HOSTING.md)** covers the rest: the full configuration
+reference, SMTP settings for common mail providers, putting it behind your own reverse
+proxy or the optional built-in Caddy profile for automatic HTTPS, backups, updates and
+troubleshooting.
+
+## Development
+
+For working on Endurance itself, rather than just running it.
 
 ### Prerequisites
 
 - .NET 8.0
 - Node.js and npm
-- MySQL (Dockerfile included)
-- Docker (optional)
+- MySQL (`docker compose up -d db` starts one, preloaded with the schema)
 
 ### Configuration
 
@@ -93,13 +126,22 @@ The project is divided into two main parts:
      npm run dev
      ```
 
-### Running with Docker
+### Database
 
-- Use Docker to set up the MySQL database. Here's a basic Docker command to get MySQL running:
-  ```bash
-  docker run --name mysql -e MYSQL_ROOT_PASSWORD=yourpassword -d mysql:latest
-  ```
-  Make sure to adjust the appsettings.json in the dotnet folder accordingly to make use of the newly created MySQL database. The schema for this project can be found [here](db/schema.sql).
+The compose stack can provide just the database, with the [schema](db/schema.sql)
+already applied, while you run the API and frontend from your IDE:
+
+```bash
+cp .env.example .env
+# Set MYSQL_ROOT_PASSWORD and MYSQL_PASSWORD — they ship blank, and compose will
+# refuse to start until they are filled in.
+
+docker compose up -d db
+```
+
+Uncomment the `ports` block on the `db` service in [`compose.yaml`](compose.yaml) to
+reach it from the host on `127.0.0.1:3306`, and point the connection string in
+`appsettings.Development.json` at it.
 
 ## License
 

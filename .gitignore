@@ -1,0 +1,8 @@
+# Local configuration for docker compose - contains SMTP and database credentials.
+.env
+
+# Local customisations: prebuilt images, reverse-proxy labels, a modified Caddyfile.
+Caddyfile.local
+compose.override.yaml
+compose.override.yml
+docker-compose.override.yml
